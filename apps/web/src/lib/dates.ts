@@ -23,6 +23,18 @@ export function weekKey(d: Date): string {
   return `${y}-${m}-${day}`;
 }
 
+export function dayKey(d: Date = new Date()): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+export function parseDayKey(key: string): Date {
+  const [y, m, d] = key.split("-").map(Number);
+  return new Date(y, m - 1, d);
+}
+
 export function formatWeekLabel(key: string): string {
   const [y, m, d] = key.split("-").map(Number);
   const start = new Date(y, m - 1, d);
@@ -48,4 +60,40 @@ export function formatShortDate(iso: string): string {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return iso;
   return d.toLocaleDateString("en-GB", { day: "numeric", month: "short" });
+}
+
+export function formatMissionDate(d: Date = new Date()): string {
+  return d
+    .toLocaleDateString("en-GB", {
+      weekday: "long",
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    })
+    .toUpperCase();
+}
+
+export function daysSince(iso: string, when = new Date()): number {
+  const start = new Date(iso);
+  if (Number.isNaN(start.getTime())) return 1;
+  const a = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+  const b = new Date(when.getFullYear(), when.getMonth(), when.getDate());
+  return Math.max(1, Math.floor((b.getTime() - a.getTime()) / 86_400_000) + 1);
+}
+
+export function lastNDays(n: number, when = new Date()): string[] {
+  const keys: string[] = [];
+  for (let i = n - 1; i >= 0; i -= 1) {
+    keys.push(dayKey(addDays(when, -i)));
+  }
+  return keys;
+}
+
+export function formatLoggedTime(minutes: number): string {
+  if (minutes >= 60) {
+    const h = Math.floor(minutes / 60);
+    const m = minutes % 60;
+    return m ? `${h}h ${m}m` : `${h}h`;
+  }
+  return `${minutes}m`;
 }

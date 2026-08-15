@@ -1,14 +1,14 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import {
   Briefcase,
   Globe2,
   LayoutDashboard,
   Target,
+  Trophy,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import {
   Sidebar,
@@ -25,20 +25,23 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { publishEntry } from "@/lib/leaderboard";
 import { useTracker } from "@/lib/useTracker";
 
 const nav = [
   { to: "/", label: "Home", icon: LayoutDashboard, end: true },
   { to: "/jobs", label: "Jobs", icon: Briefcase, end: false },
   { to: "/countries", label: "Countries", icon: Globe2, end: false },
-  { to: "/me", label: "My week", icon: Target, end: false },
+  { to: "/me", label: "Me", icon: Target, end: false },
+  { to: "/board", label: "Board", icon: Trophy, end: false },
 ];
 
 function pageMeta(pathname: string): { title: string; kicker: string } {
   if (pathname === "/") return { title: "Home", kicker: "Overview" };
   if (pathname === "/jobs") return { title: "Jobs", kicker: "Board" };
   if (pathname.startsWith("/jobs/")) return { title: "Role", kicker: "Jobs" };
-  if (pathname === "/me") return { title: "My week", kicker: "Accountability" };
+  if (pathname === "/me") return { title: "Me", kicker: "Command" };
+  if (pathname === "/board") return { title: "Board", kicker: "Public" };
   if (pathname === "/countries") return { title: "Countries", kicker: "Markets" };
   if (pathname.startsWith("/countries/")) return { title: "Market", kicker: "Countries" };
   return { title: "0pening", kicker: "Dashboard" };
@@ -47,7 +50,7 @@ function pageMeta(pathname: string): { title: string; kicker: string } {
 function Mark() {
   return (
     <svg viewBox="0 0 28 28" width="22" height="22" aria-hidden className="size-[22px]">
-      <rect width="28" height="28" rx="7" className="fill-primary/15" />
+      <rect width="28" height="28" rx="6" className="fill-white/10" />
       <path
         d="M6 20c4-1 7-4.4 7.8-8.4C14.2 14 15.6 16.2 18 17.4c1 .6 2.2 1 3.4 1.1"
         fill="none"
@@ -67,7 +70,7 @@ function AppSidebar({ locPath }: { locPath: string }) {
         <NavLink to="/" className="flex items-center gap-2.5 rounded-md px-1 py-0.5">
           <Mark />
           <div className="min-w-0 group-data-[collapsible=icon]:hidden">
-            <div className="font-heading text-lg leading-none tracking-tight">0pening</div>
+            <div className="text-lg leading-none tracking-tight">0pening</div>
             <div className="mt-0.5 text-[11px] text-muted-foreground">by AskTheHR</div>
           </div>
         </NavLink>
@@ -108,12 +111,39 @@ function AppSidebar({ locPath }: { locPath: string }) {
 }
 
 export function Layout() {
-  const { thisWeek, target, nickname } = useTracker();
+  const tracker = useTracker();
   const loc = useLocation();
   const navigate = useNavigate();
   const [q, setQ] = useState("");
   const meta = pageMeta(loc.pathname);
-  const pct = Math.min(100, Math.round((thisWeek / Math.max(target, 1)) * 100));
+  const fullBleed = loc.pathname === "/me" && !tracker.track;
+
+  useEffect(() => {
+    const track = tracker.track;
+    if (!tracker.published || !tracker.nickname.trim() || !track) return;
+    const handle = window.setTimeout(() => {
+      void publishEntry({
+        id: tracker.publicId,
+        nickname: tracker.nickname.trim(),
+        track,
+        dailyStreak: tracker.dailyStreak,
+        weeklyStreak: tracker.streak,
+        xp: tracker.xp,
+        level: tracker.level.name,
+        publishedAt: new Date().toISOString(),
+      });
+    }, 700);
+    return () => window.clearTimeout(handle);
+  }, [
+    tracker.published,
+    tracker.nickname,
+    tracker.track,
+    tracker.dailyStreak,
+    tracker.streak,
+    tracker.xp,
+    tracker.level.name,
+    tracker.publicId,
+  ]);
 
   const onSearch = (e: FormEvent) => {
     e.preventDefault();
@@ -129,9 +159,7 @@ export function Layout() {
           <SidebarTrigger className="-ml-1" />
           <Separator orientation="vertical" className="h-4" />
           <div className="min-w-0">
-            <div className="text-[10px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
-              {meta.kicker}
-            </div>
+            <div className="micro">{meta.kicker}</div>
             <div className="truncate text-sm font-medium leading-none">{meta.title}</div>
           </div>
           <form onSubmit={onSearch} className="ml-2 hidden min-w-0 flex-1 md:block">
@@ -147,20 +175,23 @@ export function Layout() {
             <Button variant="ghost" size="sm" asChild className="hidden sm:inline-flex">
               <NavLink to="/me" className="gap-2">
                 <span className="text-muted-foreground">
-                  {nickname ? nickname : "This week"}
+                  {tracker.nickname ? tracker.nickname : "Today"}
                 </span>
-                <span className="tabular-nums font-medium">
-                  {thisWeek}/{target}
+                <span className="font-mono tabular-nums font-medium">
+                  {tracker.ringsHit}/4
                 </span>
-                <Progress value={pct} className="hidden w-16 md:flex" />
               </NavLink>
             </Button>
           </div>
         </header>
         <div className="flex-1">
-          <div className="mx-auto w-full max-w-[1120px] px-4 py-6 md:px-8 md:py-8">
+          {fullBleed ? (
             <Outlet />
-          </div>
+          ) : (
+            <div className="mx-auto w-full max-w-[1120px] px-4 py-8 md:px-10 md:py-12">
+              <Outlet />
+            </div>
+          )}
         </div>
       </SidebarInset>
     </SidebarProvider>

@@ -2,13 +2,15 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/geist";
+@import "@fontsource-variable/geist-mono";
 
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-    --font-heading: var(--font-display);
+    --font-heading: var(--font-sans);
     --font-sans: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
-    --font-display: "Instrument Serif", ui-serif, Georgia, serif;
+    --font-display: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
+    --font-mono: "Geist Mono Variable", ui-monospace, SFMono-Regular, Menlo, Monaco, monospace;
     --color-sidebar-ring: var(--sidebar-ring);
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -42,53 +44,57 @@
     --color-background: var(--background);
     --color-good: var(--good);
     --color-good-foreground: var(--good-foreground);
-    --radius-sm: calc(var(--radius) * 0.6);
-    --radius-md: calc(var(--radius) * 0.8);
-    --radius-lg: var(--radius);
-    --radius-xl: calc(var(--radius) * 1.4);
-    --radius-2xl: calc(var(--radius) * 1.8);
-    --radius-3xl: calc(var(--radius) * 2.2);
-    --radius-4xl: calc(var(--radius) * 2.6);
+    --color-ink: var(--ink);
+    --color-mute: var(--mute);
+    --radius-sm: 6px;
+    --radius-md: 8px;
+    --radius-lg: 8px;
+    --radius-xl: 12px;
+    --radius-2xl: 16px;
+    --radius-3xl: 16px;
+    --radius-4xl: 16px;
 }
 
-/* Always-dark editorial surface. Light tokens unused. */
+/* SpaceX night + Apple ink + Vercel blue. Light tokens unused. */
 :root,
 .dark {
     color-scheme: dark;
-    --background: oklch(0.145 0.008 80);
-    --foreground: oklch(0.96 0.008 80);
-    --card: oklch(0.175 0.008 80);
-    --card-foreground: oklch(0.96 0.008 80);
-    --popover: oklch(0.175 0.008 80);
-    --popover-foreground: oklch(0.96 0.008 80);
-    --primary: oklch(0.82 0.14 82);
-    --primary-foreground: oklch(0.2 0.03 80);
-    --secondary: oklch(0.22 0.008 80);
-    --secondary-foreground: oklch(0.96 0.008 80);
-    --muted: oklch(0.22 0.008 80);
-    --muted-foreground: oklch(0.68 0.02 80);
-    --accent: oklch(0.22 0.01 80);
-    --accent-foreground: oklch(0.96 0.008 80);
-    --destructive: oklch(0.7 0.16 25);
-    --border: oklch(0.96 0.008 80 / 8%);
-    --input: oklch(0.96 0.008 80 / 10%);
-    --ring: oklch(0.82 0.14 82 / 50%);
-    --chart-1: oklch(0.82 0.14 82);
-    --chart-2: oklch(0.72 0.1 165);
-    --chart-3: oklch(0.68 0.02 80);
-    --chart-4: oklch(0.45 0.02 80);
-    --chart-5: oklch(0.3 0.01 80);
-    --radius: 0.625rem;
-    --sidebar: oklch(0.155 0.008 80);
-    --sidebar-foreground: oklch(0.93 0.01 80);
-    --sidebar-primary: oklch(0.82 0.14 82);
-    --sidebar-primary-foreground: oklch(0.2 0.03 80);
-    --sidebar-accent: oklch(0.22 0.01 80);
-    --sidebar-accent-foreground: oklch(0.96 0.008 80);
-    --sidebar-border: oklch(0.96 0.008 80 / 8%);
-    --sidebar-ring: oklch(0.82 0.14 82 / 50%);
-    --good: oklch(0.76 0.11 165);
-    --good-foreground: oklch(0.2 0.04 165);
+    --background: #000000;
+    --foreground: #f5f5f7;
+    --ink: #ffffff;
+    --mute: #888888;
+    --card: #0a0a0a;
+    --card-foreground: #f5f5f7;
+    --popover: #0a0a0a;
+    --popover-foreground: #f5f5f7;
+    --primary: #0070f3;
+    --primary-foreground: #ffffff;
+    --secondary: #0a0a0a;
+    --secondary-foreground: #f5f5f7;
+    --muted: #0a0a0a;
+    --muted-foreground: #888888;
+    --accent: #0a0a0a;
+    --accent-foreground: #ffffff;
+    --destructive: #ee0000;
+    --border: #3a3a3f;
+    --input: #3a3a3f;
+    --ring: #0070f3;
+    --chart-1: #0070f3;
+    --chart-2: #ffffff;
+    --chart-3: #888888;
+    --chart-4: #7a7a7a;
+    --chart-5: #3a3a3f;
+    --radius: 0.5rem;
+    --sidebar: #000000;
+    --sidebar-foreground: #f5f5f7;
+    --sidebar-primary: #0070f3;
+    --sidebar-primary-foreground: #ffffff;
+    --sidebar-accent: #0a0a0a;
+    --sidebar-accent-foreground: #ffffff;
+    --sidebar-border: #3a3a3f;
+    --sidebar-ring: #0070f3;
+    --good: #0070f3;
+    --good-foreground: #ffffff;
 }
 
 @layer base {
@@ -106,6 +112,9 @@
   html, body, #root {
     min-height: 100%;
   }
+  h1, h2, h3, .font-heading {
+    letter-spacing: -0.04em;
+  }
 }
 
 :focus-visible {
@@ -113,9 +122,69 @@
   outline-offset: 2px;
 }
 
+.micro {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+
+.lift {
+  transition: transform 200ms ease;
+}
+.lift:hover {
+  transform: translateY(-2px);
+}
+
+.hero-field {
+  --spot-x: 50%;
+  --spot-y: 28%;
+  background-image:
+    radial-gradient(520px circle at var(--spot-x) var(--spot-y), color-mix(in srgb, var(--primary) 18%, transparent), transparent 58%),
+    linear-gradient(to right, #3a3a3f 1px, transparent 1px),
+    linear-gradient(to bottom, #3a3a3f 1px, transparent 1px);
+  background-size: auto, 56px 56px, 56px 56px;
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 35%, #000 18%, transparent 78%);
+}
+
+
+.cta-glow {
+  position: relative;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+.cta-glow::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  pointer-events: none;
+  background: conic-gradient(from var(--cta-angle, 0deg), transparent 55%, #0070f3 78%, #ffffff 88%, transparent 100%);
+  opacity: 0.55;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  padding: 1px;
+  animation: cta-spin 3.2s linear infinite;
+}
+@keyframes cta-spin {
+  to { --cta-angle: 360deg; }
+}
+@property --cta-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
 @media (prefers-reduced-motion: reduce) {
   * {
     transition: none !important;
     animation: none !important;
+  }
+  .lift:hover {
+    transform: none;
+  }
+  .cta-glow::after {
+    animation: none;
+    opacity: 0;
   }
 }

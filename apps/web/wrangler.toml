@@ -1,3 +1,8 @@
 name = "0pening"
 compatibility_date = "2026-08-15"
 pages_build_output_dir = "dist"
+
+# Bind KV namespace LEADERBOARD in the Cloudflare Pages dashboard
+# (Settings → Functions → KV namespace bindings). The function falls
+# back to in-memory storage if the binding is missing — never 500s,
+# never invents users.

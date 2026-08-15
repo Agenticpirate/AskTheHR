@@ -110,7 +110,7 @@ export function JobDetail() {
                 {applied ? "Logged — you applied" : "I applied"}
               </Button>
               <Button variant="ghost" asChild>
-                <Link to="/me">See my week</Link>
+                <Link to="/me">See Me</Link>
               </Button>
             </CardContent>
           </Card>

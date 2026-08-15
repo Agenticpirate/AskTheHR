@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
+import { CompanyLogo } from "@/components/CompanyLogo";
 import { Badge } from "@/components/ui/badge";
 import { formatPosted } from "@/lib/dates";
-import { initials } from "@/lib/format";
 import { jobPath, locationLabel, type Job } from "@/lib/jobs";
 
 export function JobCard({ job }: { job: Job }) {
@@ -11,12 +11,7 @@ export function JobCard({ job }: { job: Job }) {
       className="block rounded-xl bg-card p-4 ring-1 ring-foreground/10 transition-colors hover:bg-muted/40"
     >
       <div className="flex items-start gap-3">
-        <div
-          aria-hidden
-          className="grid size-9 shrink-0 place-items-center rounded-lg bg-primary/10 text-xs font-medium text-primary"
-        >
-          {initials(job.company)}
-        </div>
+        <CompanyLogo url={job.url} company={job.company} size={28} />
         <div className="min-w-0 flex-1">
           <div className="truncate font-medium leading-snug">{job.title}</div>
           <div className="truncate text-sm text-muted-foreground">{job.company}</div>

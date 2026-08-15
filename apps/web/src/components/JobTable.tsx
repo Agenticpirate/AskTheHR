@@ -8,6 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { CompanyLogo } from "@/components/CompanyLogo";
 import { formatPosted } from "@/lib/dates";
 import { jobPath, locationLabel, type Job } from "@/lib/jobs";
 import { itemRise, staggerFast } from "@/lib/motion";
@@ -54,7 +55,12 @@ export function JobTable({
                 <div className="font-medium leading-snug">{job.title}</div>
                 <div className="text-[11px] text-muted-foreground">{job.source}</div>
               </TableCell>
-              <TableCell className="max-w-[180px] truncate">{job.company}</TableCell>
+              <TableCell className="max-w-[200px]">
+                <div className="flex items-center gap-2">
+                  <CompanyLogo url={job.url} company={job.company} size={20} />
+                  <span className="truncate">{job.company}</span>
+                </div>
+              </TableCell>
               <TableCell className="max-w-[200px] truncate text-muted-foreground">
                 {locationLabel(job)}
               </TableCell>

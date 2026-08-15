@@ -1,4 +1,5 @@
 import { Link, useParams } from "react-router-dom";
+import { CompanyLogo } from "@/components/CompanyLogo";
 import { JobTable } from "@/components/JobTable";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -57,8 +58,11 @@ export function JobDetail() {
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_280px]">
         <article>
-          <div className="text-[11px] font-medium uppercase tracking-[0.14em] text-primary">
-            {job.company}
+          <div className="flex items-center gap-2">
+            <CompanyLogo url={job.url} company={job.company} size={24} />
+            <div className="text-[11px] font-medium uppercase tracking-[0.14em] text-primary">
+              {job.company}
+            </div>
           </div>
           <h1 className="font-heading mt-1 text-3xl tracking-tight md:text-4xl">{job.title}</h1>
           <div className="mt-3 flex flex-wrap gap-1.5">

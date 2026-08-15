@@ -9,6 +9,37 @@ const ATS_VENDORS = [
   "icims.com",
 ] as const;
 
+/** Never use a job-board host as the company mark. */
+const AGGREGATOR_HOSTS = [
+  "himalayas.app",
+  "himalayas.com",
+  "remoteok.com",
+  "remoteok.io",
+  "remotive.com",
+  "remotive.io",
+  "weworkremotely.com",
+  "jobicy.com",
+  "workingnomads.com",
+  "workingnomads.co",
+  "arbeitnow.com",
+  "themuse.com",
+  "europa.eu",
+  "jobsyn.org",
+  "linkedin.com",
+  "indeed.com",
+  "naukri.com",
+  "instahyre.com",
+  "internshala.com",
+  "wellfound.com",
+  "angel.co",
+  "glassdoor.com",
+  "ziprecruiter.com",
+  "simplyhired.com",
+  "dice.com",
+  "monster.com",
+  "careerbuilder.com",
+] as const;
+
 /** ATS board slugs (and company-name keys) that are not `{slug}.com`. */
 const KNOWN_DOMAINS: Record<string, string> = {
   stripe: "stripe.com",
@@ -106,8 +137,13 @@ export function isAtsVendorHost(host: string): boolean {
   return ATS_VENDORS.some((v) => h === v || h.endsWith(`.${v}`));
 }
 
-function isAtsVendorDomain(domain: string): boolean {
-  return isAtsVendorHost(domain);
+export function isAggregatorHost(host: string): boolean {
+  const h = hostOf(host);
+  return AGGREGATOR_HOSTS.some((v) => h === v || h.endsWith(`.${v}`) || h.includes(v));
+}
+
+function isBlockedLogoHost(host: string): boolean {
+  return isAtsVendorHost(host) || isAggregatorHost(host);
 }
 
 function isUuid(value: string): boolean {
@@ -132,7 +168,7 @@ function slugToDomain(slug: string): string | null {
   if (mapped) return mapped;
   const lower = trimmed.toLowerCase().replace(/_/g, "-");
   if (lower.includes(".")) {
-    return isAtsVendorDomain(lower) ? null : lower;
+    return isBlockedLogoHost(lower) ? null : lower;
   }
   return `${lower}.com`;
 }
@@ -203,11 +239,11 @@ export function logoDomain(url: string, company?: string): string | null {
       const slug = atsCompanySlug(host, parsed.pathname);
       if (slug) {
         const domain = slugToDomain(slug);
-        if (domain && !isAtsVendorDomain(domain)) return domain;
+        if (domain && !isBlockedLogoHost(domain)) return domain;
       }
-      if (!isAtsVendorHost(host)) {
+      if (!isBlockedLogoHost(host)) {
         const reg = registrableDomain(host);
-        if (reg && !isAtsVendorDomain(reg)) {
+        if (reg && !isBlockedLogoHost(reg)) {
           return knownDomain(reg.split(".")[0] ?? "") ?? reg;
         }
       }

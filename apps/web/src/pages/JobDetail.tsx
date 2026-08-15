@@ -77,7 +77,6 @@ export function JobDetail() {
             </Badge>
             <Badge variant="outline">{locationLabel(job)}</Badge>
             <Badge variant="outline">{formatPosted(job.posted_at)}</Badge>
-            <Badge variant="outline">{job.source}</Badge>
           </div>
           <div className="prose mt-6 max-w-2xl text-sm leading-relaxed text-muted-foreground">
             {job.description ? (
@@ -87,7 +86,7 @@ export function JobDetail() {
                 </p>
               ))
             ) : (
-              <p>No description was provided by the source. Use the apply link for the full posting.</p>
+              <p>No description was provided. Use Apply at employer for the full posting.</p>
             )}
           </div>
         </article>

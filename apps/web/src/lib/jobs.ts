@@ -45,6 +45,7 @@ export function loadJobs(): Promise<JobsPayload> {
         if (!r.ok) throw new Error(`jobs.json ${r.status}`);
         return r.json() as Promise<JobsPayload>;
       })
+      .then((payload) => filterPublicJobs(payload))
       .catch((err) => {
         primaryCache = null;
         throw err;
@@ -61,7 +62,7 @@ export function loadAllJobs(): Promise<JobsPayload> {
         const extra = await fetch("/jobs-more.json");
         if (!extra.ok) return primary;
         const body = (await extra.json()) as { jobs: Job[] };
-        return { ...primary, jobs: primary.jobs.concat(body.jobs || []) };
+        return filterPublicJobs({ ...primary, jobs: primary.jobs.concat(body.jobs || []) });
       } catch {
         return primary;
       }
@@ -155,26 +156,42 @@ export function findJob(jobs: Job[], id: string): Job | undefined {
 /** Job boards we may ingest from, but never send the seeker to apply. */
 const AGGREGATOR_MARKERS = [
   "himalayas.app",
+  "himalayas.com",
   "remoteok.com",
+  "remoteok.io",
   "remotive.com",
+  "remotive.io",
   "weworkremotely.com",
   "jobicy.com",
+  "workingnomads.com",
+  "workingnomads.co",
   "workingnomads",
-  "remotefirstjobs",
+  "arbeitnow.com",
   "arbeitnow",
   "themuse.com",
   "europa.eu",
+  "de.jobsyn.org",
   "jobsyn.org",
   "linkedin.com",
   "indeed.com",
-  "glassdoor",
-  "naukri",
-  "instahyre",
-  "internshala",
+  "naukri.com",
+  "instahyre.com",
+  "internshala.com",
+  "wellfound.com",
+  "angel.co",
+  "glassdoor.com",
+  "ziprecruiter.com",
+  "simplyhired.com",
+  "dice.com",
+  "monster.com",
+  "careerbuilder.com",
+  "remotefirstjobs",
   "remotejobs.org",
   "arbeitsagentur.de",
   "mycareersfuture",
   "jobsuche",
+  "nodesk.co",
+  "nodesk.com",
 ];
 
 /** True when the apply URL is an employer ATS or company career site. */
@@ -187,4 +204,10 @@ export function isEmployerApplyUrl(url: string): boolean {
   } catch {
     return false;
   }
+}
+
+/** Drop aggregator click-outs so a stale jobs.json cannot brand the board. */
+export function filterPublicJobs(payload: JobsPayload): JobsPayload {
+  const jobs = payload.jobs.filter((j) => isEmployerApplyUrl(j.url));
+  return { ...payload, jobs, shown: jobs.length, primary: jobs.length };
 }

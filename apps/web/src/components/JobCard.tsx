@@ -23,9 +23,8 @@ export function JobCard({ job }: { job: Job }) {
         </Badge>
         <Badge variant="outline">{locationLabel(job)}</Badge>
       </div>
-      <div className="mt-3 flex justify-between text-[11px] text-muted-foreground">
-        <span>{formatPosted(job.posted_at)}</span>
-        <span>{job.source}</span>
+      <div className="mt-3 text-[11px] text-muted-foreground">
+        {formatPosted(job.posted_at)}
       </div>
     </Link>
   );

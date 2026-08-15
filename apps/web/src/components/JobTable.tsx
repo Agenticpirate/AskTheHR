@@ -53,7 +53,6 @@ export function JobTable({
             >
               <TableCell className="max-w-[280px] whitespace-normal">
                 <div className="font-medium leading-snug">{job.title}</div>
-                <div className="text-[11px] text-muted-foreground">{job.source}</div>
               </TableCell>
               <TableCell className="max-w-[200px]">
                 <div className="flex items-center gap-2">

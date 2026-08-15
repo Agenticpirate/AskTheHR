@@ -1,9 +1,6 @@
 # 0pening
 
-**0pening** is a remote-first job board with a weekly application target. It is built by **AskTheHR**.
-
-- Product: [0pening.com](https://0pening.com)
-- Marketing: [askthehr.com](https://askthehr.com)
+**0pening** is a remote-first job dashboard with a weekly application target. It is built by **AskTheHR**.
 
 The name is **0pening** (digit zero). It is not Opening.
 
@@ -17,7 +14,7 @@ Coverage is ten countries: USA, India, Canada, UK, Australia, Germany, Netherlan
 
 | Path | Purpose |
 |---|---|
-| `/` | Home, featured remote roles, weekly target |
+| `/` | Home, KPI cards, featured remote roles, country chips |
 | `/jobs` | Search and filters |
 | `/jobs/:id` | Role detail and apply |
 | `/me` | Weekly target, streak, application log |
@@ -41,4 +38,3 @@ apps/web/public/jobs.json is the published job slice. Raw collector dumps are no
 ## License
 
 MIT. Copyright (c) 2026 AskTheHR / 0pening.
-

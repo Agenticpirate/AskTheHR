@@ -2,12 +2,9 @@
 
 0pening (digit zero) is the product. AskTheHR is the marketing brand.
 
-Domain: 0pening.com
-Marketing: askthehr.com
-
 ## Promise
 
-A job board for people who are actually looking, plus a weekly application target that lives on the device. Openings posted this month across ten countries. No account. No feed.
+A job dashboard for people who are actually looking, plus a weekly application target that lives on the device. Openings posted this month across ten countries. No account. No feed.
 
 ## Markets
 
@@ -15,7 +12,7 @@ USA, India, Canada, UK, Australia, Germany, Netherlands, Ireland, Singapore, Fra
 
 ## Surfaces
 
-- Home: hero, compact weekly widget, country chips, featured remote roles
+- Home: KPI cards, country chips, featured remote roles
 - Jobs: search, country, state/city, remote vs on-site, pagination
 - Job detail: outbound apply, I applied log
 - My week: nickname, weekly target (default 8), streak, application log
@@ -27,10 +24,10 @@ The tracker is a TrackerStore. MVP persistence is localStorage (seeker.tracker.v
 
 ## Stack
 
-Vite + React + TypeScript. Static host is Cloudflare Pages. App directory apps/web. Output dist. Not Vercel.
+Vite + React + TypeScript + Tailwind + shadcn/ui. Static host is Cloudflare Pages. App directory apps/web. Output dist. Not Vercel.
 
 ## Brand rules
 
 - Product name is 0pening (leading zero). Never write Opening.
 - Marketing name is AskTheHR.
-- User-facing copy in the web app uses 0pening, not Seeker.
+- User-facing copy in the web app uses 0pening.

@@ -1,9 +1,20 @@
 import { useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
-import { JobCard } from "../components/JobCard";
-import { COUNTRIES } from "../data/countries";
-import { matchesFilters, type JobFilters } from "../lib/jobs";
-import { useJobs } from "../lib/useJobs";
+import { ChevronDown } from "lucide-react";
+import { JobTable } from "@/components/JobTable";
+import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import { COUNTRIES } from "@/data/countries";
+import { formatCount } from "@/lib/format";
+import { matchesFilters, type JobFilters } from "@/lib/jobs";
+import { useJobs } from "@/lib/useJobs";
 
 const PAGE = 20;
 
@@ -15,6 +26,18 @@ function readFilters(sp: URLSearchParams): JobFilters {
     place: sp.get("place") ?? "",
     work: work === "remote" || work === "onsite" ? work : "all",
   };
+}
+
+function countryLabel(value: string): string {
+  if (!value) return "All countries";
+  if (value === "worldwide") return "Worldwide";
+  return value;
+}
+
+function workLabel(value: JobFilters["work"]): string {
+  if (value === "remote") return "Remote";
+  if (value === "onsite") return "On-site";
+  return "Remote + on-site";
 }
 
 export function Jobs() {
@@ -44,112 +67,116 @@ export function Jobs() {
 
   return (
     <>
-      <div className="eyebrow">Job board</div>
-      <h1>Openings posted this August</h1>
-      <p className="lede">
-        Search title or company, then narrow by country, city or state, and remote vs on-site.
-        {data
-          ? ` ${data.shown.toLocaleString()} listings in this build${data.shown < data.total ? ` of ${data.total.toLocaleString()} collected` : ""}.`
-          : ""}
-      </p>
+      <PageHeader
+        eyebrow="Board"
+        title="Jobs"
+        description={
+          data
+            ? `${formatCount(data.shown)} listings on this board${
+                data.shown < data.total ? ` of ${formatCount(data.total)} collected` : ""
+              }.`
+            : "Search, then narrow by country, city, and remote."
+        }
+      />
 
-      <form className="filters" onSubmit={(e) => e.preventDefault()} style={{ marginTop: 22 }}>
-        <div className="field">
-          <label htmlFor="q">Search</label>
-          <input
-            id="q"
-            value={filters.q}
-            placeholder="Engineer, nurse, Stripe…"
-            onChange={(e) => set({ q: e.target.value })}
-          />
-        </div>
-        <div className="field">
-          <label htmlFor="country">Country</label>
-          <select
-            id="country"
-            value={filters.country}
-            onChange={(e) => set({ country: e.target.value })}
-          >
-            <option value="">All countries</option>
+      <div className="mb-4 flex flex-col gap-2 rounded-xl bg-card p-3 ring-1 ring-foreground/10 md:flex-row md:items-center">
+        <Input
+          value={filters.q}
+          placeholder="Search title or company…"
+          aria-label="Search"
+          onChange={(e) => set({ q: e.target.value })}
+          className="md:max-w-xs"
+        />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="sm" className="justify-between md:w-40">
+              {countryLabel(filters.country)}
+              <ChevronDown className="size-3.5 opacity-60" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="w-48">
+            <DropdownMenuItem onClick={() => set({ country: "" })}>All countries</DropdownMenuItem>
             {COUNTRIES.map((c) => (
-              <option key={c} value={c}>
+              <DropdownMenuItem key={c} onClick={() => set({ country: c })}>
                 {c}
-              </option>
+              </DropdownMenuItem>
             ))}
-            <option value="worldwide">Worldwide / unspecified</option>
-          </select>
-        </div>
-        <div className="field">
-          <label htmlFor="place">State or city</label>
-          <input
-            id="place"
-            value={filters.place}
-            placeholder="Bengaluru, Ontario, Berlin"
-            onChange={(e) => set({ place: e.target.value })}
-          />
-        </div>
-        <div className="field">
-          <label htmlFor="work">Work style</label>
-          <select
-            id="work"
-            value={filters.work}
-            onChange={(e) => set({ work: e.target.value })}
-          >
-            <option value="all">Remote + on-site</option>
-            <option value="remote">Remote only</option>
-            <option value="onsite">On-site only</option>
-          </select>
-        </div>
-        <div className="field">
-          <label>&nbsp;</label>
-          <button
-            type="button"
-            className="btn btn-ghost"
-            onClick={() => set({ q: "", country: "", place: "", work: "" })}
-          >
-            Reset
-          </button>
-        </div>
-      </form>
+            <DropdownMenuItem onClick={() => set({ country: "worldwide" })}>
+              Worldwide / unspecified
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+        <Input
+          value={filters.place}
+          placeholder="City or state"
+          aria-label="City or state"
+          onChange={(e) => set({ place: e.target.value })}
+          className="md:max-w-[180px]"
+        />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="sm" className="justify-between md:w-40">
+              {workLabel(filters.work)}
+              <ChevronDown className="size-3.5 opacity-60" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="w-44">
+            <DropdownMenuItem onClick={() => set({ work: "" })}>Remote + on-site</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => set({ work: "remote" })}>Remote</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => set({ work: "onsite" })}>On-site</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={() => set({ q: "", country: "", place: "", work: "" })}
+        >
+          Reset
+        </Button>
+      </div>
 
-      <div className="results-bar">
+      <div className="mb-3 flex items-center justify-between text-xs text-muted-foreground">
         <span>
-          {loading
-            ? "Loading…"
-            : `${filtered.length.toLocaleString()} roles`}
+          {loading ? "Loading…" : `${formatCount(filtered.length)} roles`}
           {loadingMore ? " · loading the rest of the board…" : ""}
+          {error ? ` · ${error}` : ""}
         </span>
         <span>
           Page {safePage} of {pages}
         </span>
       </div>
 
-      {error && <div className="empty">{error}</div>}
-      {!error && !loading && slice.length === 0 && (
-        <div className="empty">Nothing matches those filters. Try a wider country or search.</div>
-      )}
-      <div className="grid-jobs">
-        {slice.map((job) => (
-          <JobCard key={job.id} job={job} />
-        ))}
-      </div>
-      {pages > 1 && (
-        <div className="pager">
-          <button type="button" disabled={safePage <= 1} onClick={() => set({ page: String(safePage - 1) })}>
+      <JobTable
+        jobs={slice}
+        empty={error ? error : "Nothing matches those filters. Widen country or search."}
+      />
+
+      {pages > 1 ? (
+        <div className="mt-4 flex items-center justify-center gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            disabled={safePage <= 1}
+            onClick={() => set({ page: String(safePage - 1) })}
+          >
             Prev
-          </button>
-          <span>
+          </Button>
+          <span className="min-w-16 text-center text-xs text-muted-foreground">
             {safePage} / {pages}
           </span>
-          <button
+          <Button
             type="button"
+            variant="outline"
+            size="sm"
             disabled={safePage >= pages}
             onClick={() => set({ page: String(safePage + 1) })}
           >
             Next
-          </button>
+          </Button>
         </div>
-      )}
+      ) : null}
     </>
   );
 }

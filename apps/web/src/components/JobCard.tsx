@@ -1,33 +1,34 @@
 import { Link } from "react-router-dom";
-import { formatPosted } from "../lib/dates";
-import { jobPath, locationLabel, type Job } from "../lib/jobs";
-
-function initials(name: string): string {
-  const parts = name.split(/\s+/).filter(Boolean);
-  const a = parts[0]?.[0] || "?";
-  const b = parts.length > 1 ? parts[parts.length - 1][0] : parts[0]?.[1] || "";
-  return (a + b).toUpperCase();
-}
+import { Badge } from "@/components/ui/badge";
+import { formatPosted } from "@/lib/dates";
+import { initials } from "@/lib/format";
+import { jobPath, locationLabel, type Job } from "@/lib/jobs";
 
 export function JobCard({ job }: { job: Job }) {
   return (
-    <Link className="job-card" to={jobPath(job)}>
-      <div className="job-top">
-        <div className="avatar" aria-hidden>
+    <Link
+      to={jobPath(job)}
+      className="block rounded-xl bg-card p-4 ring-1 ring-foreground/10 transition-colors hover:bg-muted/40"
+    >
+      <div className="flex items-start gap-3">
+        <div
+          aria-hidden
+          className="grid size-9 shrink-0 place-items-center rounded-lg bg-primary/10 text-xs font-medium text-primary"
+        >
           {initials(job.company)}
         </div>
-        <div>
-          <h3>{job.title}</h3>
-          <div className="co">{job.company}</div>
+        <div className="min-w-0 flex-1">
+          <div className="truncate font-medium leading-snug">{job.title}</div>
+          <div className="truncate text-sm text-muted-foreground">{job.company}</div>
         </div>
       </div>
-      <div className="meta">
-        <span className={`pill ${job.remote ? "remote" : "onsite"}`}>
+      <div className="mt-3 flex flex-wrap items-center gap-1.5">
+        <Badge variant={job.remote ? "secondary" : "outline"}>
           {job.remote ? "Remote" : "On-site"}
-        </span>
-        <span className="pill">{locationLabel(job)}</span>
+        </Badge>
+        <Badge variant="outline">{locationLabel(job)}</Badge>
       </div>
-      <div className="job-foot">
+      <div className="mt-3 flex justify-between text-[11px] text-muted-foreground">
         <span>{formatPosted(job.posted_at)}</span>
         <span>{job.source}</span>
       </div>

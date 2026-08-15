@@ -1,7 +1,10 @@
 import { Link, Navigate, useParams } from "react-router-dom";
-import { JobCard } from "../components/JobCard";
-import { COUNTRY_META, countryFromSlug } from "../data/countries";
-import { useJobs } from "../lib/useJobs";
+import { JobTable } from "@/components/JobTable";
+import { PageHeader } from "@/components/PageHeader";
+import { Button } from "@/components/ui/button";
+import { COUNTRY_META, countryFromSlug } from "@/data/countries";
+import { formatCount } from "@/lib/format";
+import { useJobs } from "@/lib/useJobs";
 
 export function Country() {
   const { slug = "" } = useParams();
@@ -16,36 +19,47 @@ export function Country() {
 
   return (
     <>
-      <p className="notice">
-        <Link to="/countries">Countries</Link> / {country}
+      <p className="mb-4 text-xs text-muted-foreground">
+        <Link to="/countries" className="hover:text-foreground">
+          Countries
+        </Link>
+        {" / "}
+        {country}
       </p>
-      <div className="eyebrow">{meta.flag} {country}</div>
-      <h1>{country} roles this August</h1>
-      <p className="lede">{meta.blurb}</p>
-      <p className="notice">
+      <PageHeader
+        eyebrow={`${meta.flag} ${country}`}
+        title={country}
+        description={meta.blurb}
+        actions={
+          <>
+            <Button asChild>
+              <Link to={`/jobs?country=${encodeURIComponent(country)}`}>Open in the board</Link>
+            </Button>
+            <Button variant="outline" asChild>
+              <Link to={`/jobs?country=${encodeURIComponent(country)}&work=remote`}>
+                Remote only
+              </Link>
+            </Button>
+          </>
+        }
+      />
+      <p className="mb-4 text-sm text-muted-foreground">
         {loading
           ? "Counting listings…"
-          : `${jobs.length.toLocaleString()} in this country · ${remote.toLocaleString()} remote`}
+          : `${formatCount(jobs.length)} in this country · ${formatCount(remote)} remote`}
       </p>
-      <div className="btn-row" style={{ margin: "18px 0 28px" }}>
-        <Link className="btn btn-primary" to={`/jobs?country=${encodeURIComponent(country)}`}>
-          Open in the board
-        </Link>
-        <Link className="btn btn-ghost" to={`/jobs?country=${encodeURIComponent(country)}&work=remote`}>
-          Remote only
-        </Link>
-      </div>
-      <div className="grid-jobs">
-        {preview.map((job) => (
-          <JobCard key={job.id} job={job} />
-        ))}
-      </div>
-      {jobs.length > preview.length && (
-        <p className="notice" style={{ marginTop: 16 }}>
-          Showing 12 of {jobs.length.toLocaleString()}.{" "}
-          <Link to={`/jobs?country=${encodeURIComponent(country)}`}>See the rest with filters.</Link>
+      <JobTable jobs={preview} empty={loading ? "Loading…" : "No roles for this market in the slice."} />
+      {jobs.length > preview.length ? (
+        <p className="mt-3 text-xs text-muted-foreground">
+          Showing 12 of {formatCount(jobs.length)}.{" "}
+          <Link
+            to={`/jobs?country=${encodeURIComponent(country)}`}
+            className="text-foreground underline-offset-4 hover:underline"
+          >
+            See the rest with filters.
+          </Link>
         </p>
-      )}
+      ) : null}
     </>
   );
 }

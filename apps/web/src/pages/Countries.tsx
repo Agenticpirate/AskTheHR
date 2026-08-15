@@ -1,6 +1,9 @@
 import { Link } from "react-router-dom";
-import { COUNTRIES, COUNTRY_META } from "../data/countries";
-import { useJobs } from "../lib/useJobs";
+import { PageHeader } from "@/components/PageHeader";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { COUNTRIES, COUNTRY_META } from "@/data/countries";
+import { formatCount } from "@/lib/format";
+import { useJobs } from "@/lib/useJobs";
 
 export function Countries() {
   const { data } = useJobs(true);
@@ -9,21 +12,26 @@ export function Countries() {
 
   return (
     <>
-      <div className="eyebrow">Coverage</div>
-      <h1>Ten markets we actually cover</h1>
-      <p className="lede">
-        Remote first, then on-site in the cities that hire. Worldwide-eligible roles sit in a
-        separate bucket ({remote.toLocaleString()} remote listings in this month's collection).
-      </p>
-      <div className="country-grid" style={{ marginTop: 24 }}>
+      <PageHeader
+        eyebrow="Coverage"
+        title="Countries"
+        description={`Remote first, then on-site in the cities that hire. ${formatCount(remote)} remote listings in this month's collection.`}
+      />
+      <div className="grid gap-3 sm:grid-cols-2">
         {COUNTRIES.map((c) => (
-          <Link key={c} className="country-card" to={`/countries/${COUNTRY_META[c].slug}`}>
-            <div className="flag">{COUNTRY_META[c].flag}</div>
-            <h3>{c}</h3>
-            <p className="notice" style={{ margin: 0 }}>
-              {COUNTRY_META[c].blurb}
-            </p>
-            <div className="count-line">{(counts[c] ?? 0).toLocaleString()} openings</div>
+          <Link key={c} to={`/countries/${COUNTRY_META[c].slug}`}>
+            <Card className="h-full transition-colors hover:bg-muted/40">
+              <CardHeader>
+                <div className="text-lg">{COUNTRY_META[c].flag}</div>
+                <CardTitle>{c}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">{COUNTRY_META[c].blurb}</p>
+                <div className="mt-3 text-xs text-muted-foreground">
+                  {formatCount(counts[c] ?? 0)} openings
+                </div>
+              </CardContent>
+            </Card>
           </Link>
         ))}
       </div>

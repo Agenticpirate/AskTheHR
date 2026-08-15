@@ -1,0 +1,17 @@
+node_modules/
+dist/
+.env
+.env.*
+.DS_Store
+*.jsonl
+apps/web/public/jobs-more.json
+data/raw/
+data/normalized/
+data/debug/
+__pycache__/
+*.pyc
+.wrangler/
+.cloudflare/
+*.log
+coverage/
+.vite/

@@ -41,7 +41,7 @@ export function ProgressRing({
     }
     gsap.to(el, {
       strokeDashoffset: target,
-      duration: 0.9,
+      duration: 0.4,
       ease: "power2.out",
     });
   }, [pct, c, reduce]);
@@ -89,7 +89,7 @@ export function ProgressRing({
       <motion.button
         type="button"
         onClick={onClick}
-        whileHover={reduce ? undefined : { y: -2, filter: "brightness(1.08)" }}
+        whileHover={reduce ? undefined : { y: -1, filter: "brightness(1.06)" }}
         whileTap={reduce ? undefined : { scale: 0.98 }}
         className="group relative flex flex-col items-center gap-2"
       >

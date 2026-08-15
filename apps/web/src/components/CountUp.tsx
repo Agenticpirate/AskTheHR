@@ -6,36 +6,44 @@ import { useRef } from "react";
 export function CountUp({
   value,
   className,
-  duration = 0.8,
+  duration = 0.4,
+  format,
 }: {
   value: number;
   className?: string;
   duration?: number;
+  format?: (n: number) => string;
 }) {
   const ref = useRef<HTMLSpanElement>(null);
+  const prev = useRef(0);
   const reduce = useReducedMotion();
+  const write = (n: number) => (format ? format(n) : String(Math.round(n)));
 
   useGSAP(() => {
     const el = ref.current;
     if (!el) return;
     if (reduce) {
-      el.textContent = String(Math.round(value));
+      el.textContent = write(value);
+      prev.current = value;
       return;
     }
-    const obj = { n: Number(el.textContent) || 0 };
+    const obj = { n: prev.current };
     gsap.to(obj, {
       n: value,
       duration,
       ease: "power2.out",
       onUpdate: () => {
-        el.textContent = String(Math.round(obj.n));
+        el.textContent = write(obj.n);
+      },
+      onComplete: () => {
+        prev.current = value;
       },
     });
   }, [value, reduce, duration]);
 
   return (
     <span ref={ref} className={className}>
-      {Math.round(value)}
+      {write(reduce ? value : prev.current)}
     </span>
   );
 }

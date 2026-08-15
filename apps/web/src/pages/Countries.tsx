@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { PageEnter, Stagger, StaggerItem } from "@/components/PageEnter";
 import { PageHeader } from "@/components/PageHeader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { COUNTRIES, COUNTRY_META } from "@/data/countries";
@@ -11,16 +12,17 @@ export function Countries() {
   const remote = data?.by_remote?.remote ?? 0;
 
   return (
-    <>
+    <PageEnter>
       <PageHeader
         eyebrow="Coverage"
         title="Countries"
         description={`Remote first, then on-site in the cities that hire. ${formatCount(remote)} remote listings in this month's collection.`}
       />
-      <div className="grid gap-3 sm:grid-cols-2">
+      <Stagger className="grid gap-3 sm:grid-cols-2">
         {COUNTRIES.map((c) => (
-          <Link key={c} to={`/countries/${COUNTRY_META[c].slug}`}>
-            <Card className="h-full transition-colors hover:bg-muted/40">
+          <StaggerItem key={c}>
+          <Link to={`/countries/${COUNTRY_META[c].slug}`}>
+            <Card className="lift h-full transition-colors hover:bg-muted/40">
               <CardHeader>
                 <div className="text-lg">{COUNTRY_META[c].flag}</div>
                 <CardTitle>{c}</CardTitle>
@@ -33,8 +35,10 @@ export function Countries() {
               </CardContent>
             </Card>
           </Link>
+          </StaggerItem>
         ))}
-      </div>
-    </>
+      </Stagger>
+    </PageEnter>
   );
 }
+

@@ -18,7 +18,7 @@ export function XpBar({ xp, level }: { xp: number; level: LevelInfo }) {
       gsap.set(el, { width: `${level.progress}%` });
       return;
     }
-    gsap.to(el, { width: `${level.progress}%`, duration: 0.7, ease: "power2.out" });
+    gsap.to(el, { width: `${level.progress}%`, duration: 0.4, ease: "power2.out" });
   }, [level.progress, reduce]);
 
   useEffect(() => {
@@ -30,7 +30,7 @@ export function XpBar({ xp, level }: { xp: number; level: LevelInfo }) {
     gsap.fromTo(
       el,
       { opacity: 0.7 },
-      { opacity: 0, duration: 0.6, ease: "power2.out" },
+      { opacity: 0, duration: 0.32, ease: "power2.out" },
     );
   }, [level.name, reduce]);
 
@@ -39,7 +39,7 @@ export function XpBar({ xp, level }: { xp: number; level: LevelInfo }) {
       <div className="mb-1.5 flex items-baseline justify-between gap-3">
         <div className="text-sm font-medium">{level.name}</div>
         <div className="font-mono text-xs tabular-nums text-muted-foreground">
-          <CountUp value={xp} duration={0.6} />
+          <CountUp value={xp} duration={0.4} />
           {level.next !== null ? ` / ${level.next}` : " XP"}
         </div>
       </div>

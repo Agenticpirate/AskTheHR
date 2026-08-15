@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { ChevronDown } from "lucide-react";
 import { JobTable } from "@/components/JobTable";
+import { PageEnter, Section } from "@/components/PageEnter";
 import { BoardLoading } from "@/components/Orb";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
@@ -67,7 +68,7 @@ export function Jobs() {
   const slice = filtered.slice((safePage - 1) * PAGE, safePage * PAGE);
 
   return (
-    <>
+    <PageEnter>
       <PageHeader
         eyebrow="Board"
         title="Jobs"
@@ -80,7 +81,7 @@ export function Jobs() {
         }
       />
 
-      <div className="mb-4 flex flex-col gap-2 rounded-xl bg-card p-3 ring-1 ring-foreground/10 md:flex-row md:items-center">
+      <Section delay={0.05} className="mb-4 flex flex-col gap-2 rounded-xl bg-card p-3 ring-1 ring-foreground/10 md:flex-row md:items-center">
         <Input
           value={filters.q}
           placeholder="Search title or company…"
@@ -135,8 +136,9 @@ export function Jobs() {
         >
           Reset
         </Button>
-      </div>
+      </Section>
 
+      <Section delay={0.08}>
       <div className="mb-3 flex items-center justify-between text-xs text-muted-foreground">
         <span>
           {loading ? "Loading…" : `${formatCount(filtered.length)} roles`}
@@ -182,6 +184,7 @@ export function Jobs() {
           </Button>
         </div>
       ) : null}
-    </>
+      </Section>
+    </PageEnter>
   );
 }

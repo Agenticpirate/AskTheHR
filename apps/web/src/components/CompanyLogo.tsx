@@ -1,3 +1,4 @@
+import { useReducedMotion } from "motion/react";
 import { useEffect, useState } from "react";
 import { initials } from "@/lib/format";
 import { fallbackLogoUrl, logoDomain, logoUrl } from "@/lib/logo";
@@ -16,15 +17,18 @@ export function CompanyLogo({
   size?: Size;
   className?: string;
 }) {
+  const reduce = useReducedMotion();
   const domain = logoDomain(url, company);
   const primary = domain ? logoUrl(domain) : "";
   const fallback = domain ? fallbackLogoUrl(domain) : "";
   const [phase, setPhase] = useState<"primary" | "fallback" | "initials">(
     domain ? "primary" : "initials",
   );
+  const [shown, setShown] = useState(false);
 
   useEffect(() => {
     setPhase(domain ? "primary" : "initials");
+    setShown(false);
   }, [domain]);
 
   const box =
@@ -37,6 +41,7 @@ export function CompanyLogo({
         className={cn(
           "grid shrink-0 place-items-center rounded-sm bg-primary/10 font-medium text-primary",
           box,
+          !reduce && "logo-in",
           className,
         )}
       >
@@ -55,8 +60,16 @@ export function CompanyLogo({
       height={size}
       decoding="async"
       referrerPolicy="no-referrer"
-      className={cn("shrink-0 rounded-sm bg-white object-contain ring-1 ring-border", box, className)}
+      className={cn(
+        "shrink-0 rounded-sm bg-white object-contain ring-1 ring-border",
+        box,
+        reduce || shown ? "opacity-100" : "opacity-0",
+        !reduce && "transition-opacity duration-200 ease-out",
+        className,
+      )}
+      onLoad={() => setShown(true)}
       onError={() => {
+        setShown(false);
         setPhase((current) => (current === "primary" ? "fallback" : "initials"));
       }}
     />

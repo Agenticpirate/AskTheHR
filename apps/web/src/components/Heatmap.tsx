@@ -1,7 +1,7 @@
 import { motion, useReducedMotion } from "motion/react";
 import { lastNDays } from "@/lib/dates";
 import { activityScore, type TrackerState } from "@/lib/tracker";
-import { itemRise, staggerFast } from "@/lib/motion";
+import { cellPop, staggerHeat } from "@/lib/motion";
 
 function tone(score: number): string {
   if (score <= 0) return "bg-foreground/10";
@@ -22,7 +22,7 @@ export function Heatmap({ state }: { state: TrackerState }) {
         style={{ gridTemplateColumns: "repeat(15, minmax(0, 1fr))" }}
         initial={reduce ? "show" : "hidden"}
         animate="show"
-        variants={staggerFast}
+        variants={staggerHeat}
       >
         {days.map((key) => {
           const score = activityScore(state, key);
@@ -30,7 +30,7 @@ export function Heatmap({ state }: { state: TrackerState }) {
             <motion.div
               key={key}
               title={`${key} · ${score}`}
-              variants={itemRise}
+              variants={cellPop}
               className={`aspect-square rounded-[2px] ${tone(score)}`}
             />
           );

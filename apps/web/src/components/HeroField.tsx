@@ -11,9 +11,9 @@ function WordReveal({ text, className }: { text: string; className?: string }) {
         <motion.span
           key={`${word}-${i}`}
           className="mr-[0.28em] inline-block"
-          initial={reduce ? false : { opacity: 0, y: 22 }}
+          initial={reduce ? false : { opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.07 * i, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.32, delay: 0.04 * i, ease: [0.22, 1, 0.36, 1] }}
         >
           {word}
         </motion.span>
@@ -51,9 +51,9 @@ export function HeroHeadline() {
       />
       <motion.p
         className="mt-5 max-w-xl text-lg text-muted-foreground md:text-xl"
-        initial={reduce ? false : { opacity: 0, y: 12 }}
+        initial={reduce ? false : { opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.45, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 0.28, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
       >
         Discipline is the product.
       </motion.p>

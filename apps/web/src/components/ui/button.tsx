@@ -9,7 +9,7 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "cta-glow bg-foreground text-background hover:opacity-90",
+        default: "bg-foreground text-background hover:opacity-90",
         outline:
           "rounded-full border-border bg-transparent text-foreground hover:bg-muted aria-expanded:bg-muted",
         secondary:

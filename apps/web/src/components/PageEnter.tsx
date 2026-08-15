@@ -1,6 +1,6 @@
 import { motion, useReducedMotion } from "motion/react";
 import type { ReactNode } from "react";
-import { fadeRise, itemRise, stagger } from "@/lib/motion";
+import { fadeRise, itemRise } from "@/lib/motion";
 
 export function PageEnter({
   children,
@@ -15,7 +15,12 @@ export function PageEnter({
       className={className}
       initial={reduce ? false : "hidden"}
       animate="show"
-      variants={stagger}
+      variants={{
+        hidden: {},
+        show: {
+          transition: { staggerChildren: 0.045, delayChildren: 0.03 },
+        },
+      }}
     >
       {children}
     </motion.div>
@@ -36,9 +41,9 @@ export function Section({
     <motion.section
       className={className}
       variants={fadeRise}
-      initial={reduce ? false : { opacity: 0, y: 16 }}
+      initial={reduce ? false : { opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: 0.28, delay, ease: [0.22, 1, 0.36, 1] }}
     >
       {children}
     </motion.section>
@@ -64,8 +69,8 @@ export function Stagger({
         hidden: {},
         show: {
           transition: {
-            staggerChildren: fast ? 0.03 : 0.07,
-            delayChildren: 0.05,
+            staggerChildren: fast ? 0.018 : 0.045,
+            delayChildren: 0.03,
           },
         },
       }}

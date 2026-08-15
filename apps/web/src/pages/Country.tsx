@@ -1,5 +1,6 @@
 import { Link, Navigate, useParams } from "react-router-dom";
 import { JobTable } from "@/components/JobTable";
+import { PageEnter, Section } from "@/components/PageEnter";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import { COUNTRY_META, countryFromSlug } from "@/data/countries";
@@ -18,7 +19,7 @@ export function Country() {
   const preview = jobs.slice(0, 12);
 
   return (
-    <>
+    <PageEnter>
       <p className="mb-4 text-xs text-muted-foreground">
         <Link to="/countries" className="hover:text-foreground">
           Countries
@@ -48,6 +49,7 @@ export function Country() {
           ? "Counting listings…"
           : `${formatCount(jobs.length)} in this country · ${formatCount(remote)} remote`}
       </p>
+      <Section delay={0.06}>
       <JobTable jobs={preview} empty={loading ? "Loading…" : "No roles for this market in the slice."} />
       {jobs.length > preview.length ? (
         <p className="mt-3 text-xs text-muted-foreground">
@@ -60,6 +62,7 @@ export function Country() {
           </Link>
         </p>
       ) : null}
-    </>
+      </Section>
+    </PageEnter>
   );
 }

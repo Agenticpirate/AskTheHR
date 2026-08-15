@@ -2,6 +2,7 @@ import { Link, useParams } from "react-router-dom";
 import { Orb } from "@/components/Orb";
 import { CompanyLogo } from "@/components/CompanyLogo";
 import { JobTable } from "@/components/JobTable";
+import { PageEnter, Section } from "@/components/PageEnter";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -44,7 +45,8 @@ export function JobDetail() {
   const similar = similarJobs(jobs, job, 4);
 
   return (
-    <>
+    <PageEnter>
+      <Section>
       <p className="mb-4 text-xs text-muted-foreground">
         <Link to="/jobs" className="hover:text-foreground">
           Jobs
@@ -132,12 +134,14 @@ export function JobDetail() {
         </aside>
       </div>
 
+      </Section>
       {similar.length > 0 ? (
-        <section className="mt-10">
+        <Section delay={0.08} className="mt-10">
           <h2 className="font-heading mb-3 text-2xl tracking-tight">Nearby roles</h2>
           <JobTable jobs={similar} />
-        </section>
+        </Section>
       ) : null}
-    </>
+    </PageEnter>
   );
 }
+

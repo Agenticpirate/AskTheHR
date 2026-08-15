@@ -34,15 +34,15 @@ export function TodayRings({
       el,
       { scale: 1, boxShadow: "0 0 0 0 rgba(0,112,243,0)" },
       {
-        scale: 1.03,
+        scale: 1.012,
         boxShadow: "0 0 36px 0 rgba(0,112,243,0.45)",
-        duration: 0.28,
+        duration: 0.2,
         ease: "power2.out",
       },
     ).to(el, {
       scale: 1,
       boxShadow: "0 0 0 1px rgba(0,112,243,0.7)",
-      duration: 0.45,
+      duration: 0.32,
       ease: "power2.inOut",
     });
   }, [hit, reduce]);

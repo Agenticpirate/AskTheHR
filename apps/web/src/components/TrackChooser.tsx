@@ -7,9 +7,9 @@ export function TrackChooser({ onPick }: { onPick: (track: TrackId) => void }) {
   return (
     <div className="flex min-h-[calc(100vh-4rem)] flex-col justify-center px-6 py-16 md:px-12">
       <motion.div
-        initial={reduce ? false : { opacity: 0, y: 18 }}
+        initial={reduce ? false : { opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
         className="mb-12 max-w-2xl"
       >
         <div className="micro text-primary">Choose a track</div>
@@ -32,7 +32,7 @@ export function TrackChooser({ onPick }: { onPick: (track: TrackId) => void }) {
               key={id}
               type="button"
               variants={itemRise}
-              whileHover={reduce ? undefined : { y: -2, filter: "brightness(1.08)" }}
+              whileHover={reduce ? undefined : { y: -1, filter: "brightness(1.06)" }}
               whileTap={reduce ? undefined : { scale: 0.99 }}
               onClick={() => onPick(id)}
               className="rounded-lg bg-card px-6 py-8 text-left ring-1 ring-border"

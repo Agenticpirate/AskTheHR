@@ -28,3 +28,9 @@ export function initials(name: string): string {
   const b = parts.length > 1 ? parts[parts.length - 1][0] : parts[0]?.[1] || "";
   return (a + b).toUpperCase();
 }
+
+export function formatPercentPoints(n: number): string {
+  if (!Number.isFinite(n)) return "—";
+  if (n >= 10) return `${n.toFixed(0)}%`;
+  return `${n.toFixed(1)}%`;
+}

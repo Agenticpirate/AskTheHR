@@ -8,7 +8,7 @@ import { TodayRings } from "@/components/TodayRings";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { COUNTRIES, COUNTRY_META } from "@/data/countries";
-import { formatCompact, formatCount, formatPercent } from "@/lib/format";
+import { formatCompact, formatCount, formatPercent, formatPercentPoints } from "@/lib/format";
 import { featuredRemote } from "@/lib/jobs";
 import { useJobs } from "@/lib/useJobs";
 import { useTracker } from "@/lib/useTracker";
@@ -65,6 +65,8 @@ export function Home() {
             <KpiCard
               label="Openings"
               value={loading ? "—" : formatCompact(total)}
+              count={loading ? undefined : total}
+              format={formatCompact}
               hint={total ? `${formatCount(total)} collected` : "From jobs.json"}
             />
           </StaggerItem>
@@ -72,6 +74,8 @@ export function Home() {
             <KpiCard
               label="Remote share"
               value={loading ? "—" : formatPercent(remoteShare)}
+              count={loading || classified === 0 ? undefined : remoteShare * 100}
+              format={formatPercentPoints}
               hint={remote ? `${formatCount(remote)} remote listings` : "Of classified roles"}
             />
           </StaggerItem>
@@ -79,6 +83,7 @@ export function Home() {
             <KpiCard
               label="This week"
               value={`${tracker.thisWeek}`}
+              count={tracker.thisWeek}
               hint={`${tracker.thisWeek} of ${tracker.target} applications`}
             />
           </StaggerItem>
@@ -86,6 +91,7 @@ export function Home() {
             <KpiCard
               label="Streak"
               value={`${tracker.dailyStreak}`}
+              count={tracker.dailyStreak}
               hint={tracker.dailyStreak === 1 ? "Day checked in" : "Days of activity"}
             />
           </StaggerItem>

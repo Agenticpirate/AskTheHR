@@ -37,8 +37,8 @@ export function ShareCard({
   return (
     <motion.div
       key={pop}
-      animate={reduce || pop === 0 ? undefined : { scale: [1, 1.02, 1] }}
-      transition={{ type: "spring", stiffness: 420, damping: 16 }}
+      animate={reduce || pop === 0 ? undefined : { scale: [1, 1.01, 1] }}
+      transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
       className="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-card px-4 py-3 ring-1 ring-border"
     >
       <div className="min-w-0">

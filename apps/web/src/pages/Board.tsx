@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { motion, useReducedMotion } from "motion/react";
+import { useReducedMotion } from "motion/react";
 import { CountUp } from "@/components/CountUp";
 import { PageEnter, Section } from "@/components/PageEnter";
 import { Button } from "@/components/ui/button";
@@ -12,7 +12,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { fetchBoard, type BoardEntry, type BoardResult } from "@/lib/leaderboard";
-import { itemRise, stagger } from "@/lib/motion";
+import { useTableEnter } from "@/lib/useTableEnter";
 import { TRACKS } from "@/lib/tracker";
 import { useTracker } from "@/lib/useTracker";
 
@@ -32,6 +32,8 @@ export function Board() {
   }, [tracker.published, tracker.xp, tracker.dailyStreak]);
 
   const entries = result?.entries ?? [];
+  const listKey = entries.map((e) => e.id).join("|");
+  const bodyRef = useTableEnter(listKey, reduce);
 
   return (
     <PageEnter>
@@ -74,11 +76,7 @@ export function Board() {
                   <TableHead>XP</TableHead>
                 </TableRow>
               </TableHeader>
-              <motion.tbody
-                initial={reduce ? "show" : "hidden"}
-                animate="show"
-                variants={stagger}
-              >
+              <tbody ref={bodyRef}>
                 {entries.map((row, i) => (
                   <BoardRow
                     key={row.id}
@@ -87,7 +85,7 @@ export function Board() {
                     mine={row.id === tracker.publicId}
                   />
                 ))}
-              </motion.tbody>
+              </tbody>
             </Table>
           </div>
         )}
@@ -106,22 +104,35 @@ function BoardRow({
   mine: boolean;
 }) {
   return (
-    <motion.tr
-      variants={itemRise}
-      className={`border-b ${mine ? "bg-primary/10" : "hover:bg-muted/50"}`}
+    <tr
+      className={`row-lift border-b ${mine ? "bg-primary/10" : "hover:bg-muted/50"}`}
     >
       <TableCell className="font-mono tabular-nums">
-        <CountUp value={rank} duration={0.5} />
+        <div className="row-lift-inner">
+          <CountUp value={rank} duration={0.35} />
+        </div>
       </TableCell>
       <TableCell className="font-medium">
-        {row.nickname}
-        {mine ? <span className="ml-2 text-xs text-primary">You</span> : null}
+        <div className="row-lift-inner">
+          {row.nickname}
+          {mine ? <span className="ml-2 text-xs text-primary">You</span> : null}
+        </div>
       </TableCell>
-      <TableCell className="text-muted-foreground">{TRACKS[row.track].label}</TableCell>
-      <TableCell className="font-mono tabular-nums">{row.dailyStreak}</TableCell>
-      <TableCell className="font-mono tabular-nums">{row.weeklyStreak}</TableCell>
-      <TableCell>{row.level}</TableCell>
-      <TableCell className="font-mono tabular-nums">{row.xp}</TableCell>
-    </motion.tr>
+      <TableCell className="text-muted-foreground">
+        <div className="row-lift-inner">{TRACKS[row.track].label}</div>
+      </TableCell>
+      <TableCell className="font-mono tabular-nums">
+        <div className="row-lift-inner">{row.dailyStreak}</div>
+      </TableCell>
+      <TableCell className="font-mono tabular-nums">
+        <div className="row-lift-inner">{row.weeklyStreak}</div>
+      </TableCell>
+      <TableCell>
+        <div className="row-lift-inner">{row.level}</div>
+      </TableCell>
+      <TableCell className="font-mono tabular-nums">
+        <div className="row-lift-inner">{row.xp}</div>
+      </TableCell>
+    </tr>
   );
 }

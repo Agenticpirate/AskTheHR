@@ -1,3 +1,7 @@
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import { useReducedMotion } from "motion/react";
+import { useRef } from "react";
 import { Link } from "react-router-dom";
 import { CheckInButton } from "@/components/Orb";
 import { CountUp } from "@/components/CountUp";
@@ -21,7 +25,7 @@ function Kpi({
   hint: string;
 }) {
   return (
-    <div className="rounded-lg bg-card px-4 py-3 ring-1 ring-border">
+    <div className="lift rounded-lg bg-card px-4 py-3 ring-1 ring-border">
       <div className="micro">{label}</div>
       <div className="mt-1.5 font-display text-3xl leading-none tracking-tight md:text-4xl">
         <CountUp value={value} />
@@ -48,21 +52,7 @@ export function Streak() {
       </Section>
 
       <Section delay={0.04} className="mb-5">
-        <div className="flex items-center justify-between gap-4 rounded-lg bg-foreground px-4 py-3 text-background">
-          <div>
-            <div className="font-mono text-[11px] font-medium uppercase tracking-[0.16em] opacity-50">
-              Today
-            </div>
-            <div className="mt-1 text-lg tracking-tight">
-              {tracker.today.checkedIn ? "Checked in" : "Not checked in"}
-            </div>
-          </div>
-          <p className="max-w-[14rem] text-right text-xs leading-relaxed opacity-60">
-            {tracker.today.checkedIn
-              ? "On the board. Keep the chain."
-              : "One tap starts today."}
-          </p>
-        </div>
+        <CheckInTile checkedIn={tracker.today.checkedIn} />
       </Section>
 
       <Section delay={0.08} className="mb-5">
@@ -82,7 +72,7 @@ export function Streak() {
             />
           </StaggerItem>
           <StaggerItem>
-            <div className="rounded-lg bg-card px-4 py-3 ring-1 ring-border">
+            <div className="lift rounded-lg bg-card px-4 py-3 ring-1 ring-border">
               <div className="micro">XP / level</div>
               <div className="mt-1.5 font-display text-3xl leading-none tracking-tight md:text-4xl">
                 <CountUp value={tracker.xp} />
@@ -107,7 +97,7 @@ export function Streak() {
       </Section>
 
       <Section delay={0.12} className="mb-5">
-        <div className="rounded-lg bg-card px-4 py-3 ring-1 ring-border">
+        <div className="lift rounded-lg bg-card px-4 py-3 ring-1 ring-border">
           <Heatmap state={tracker.state} />
         </div>
       </Section>
@@ -180,5 +170,44 @@ export function Streak() {
         <ReminderSettings />
       </Section>
     </PageEnter>
+  );
+}
+
+function CheckInTile({ checkedIn }: { checkedIn: boolean }) {
+  const reduce = useReducedMotion();
+  const ref = useRef<HTMLDivElement>(null);
+  const was = useRef(checkedIn);
+
+  useGSAP(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (reduce) return;
+    if (checkedIn && !was.current) {
+      gsap.fromTo(
+        el,
+        { filter: "brightness(1.28)" },
+        { filter: "brightness(1)", duration: 0.32, ease: "power2.out" },
+      );
+    }
+    was.current = checkedIn;
+  }, [checkedIn, reduce]);
+
+  return (
+    <div
+      ref={ref}
+      className="flex items-center justify-between gap-4 rounded-lg bg-foreground px-4 py-3 text-background"
+    >
+      <div>
+        <div className="font-mono text-[11px] font-medium uppercase tracking-[0.16em] opacity-50">
+          Today
+        </div>
+        <div className="mt-1 text-lg tracking-tight">
+          {checkedIn ? "Checked in" : "Not checked in"}
+        </div>
+      </div>
+      <p className="max-w-[14rem] text-right text-xs leading-relaxed opacity-60">
+        {checkedIn ? "On the board. Keep the chain." : "One tap starts today."}
+      </p>
+    </div>
   );
 }

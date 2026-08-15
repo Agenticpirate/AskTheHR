@@ -31,14 +31,17 @@ export function Section({
   children,
   className,
   delay = 0,
+  id,
 }: {
   children: ReactNode;
   className?: string;
   delay?: number;
+  id?: string;
 }) {
   const reduce = useReducedMotion();
   return (
     <motion.section
+      id={id}
       className={className}
       variants={fadeRise}
       initial={reduce ? false : { opacity: 0, y: 8 }}

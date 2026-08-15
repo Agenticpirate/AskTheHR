@@ -7,7 +7,8 @@ August 2026 openings across USA, India, Canada, UK, Australia, Germany, Netherla
 
 ## Pages
 
-- `/` Home: KPI cards, country chips, featured remote roles
+- `/` Marketing: AskTheHR homepage, no app sidebar
+- `/app` App home: KPI cards, country chips, featured remote roles
 - `/jobs` Board: search, country, city, remote vs on-site, pagination
 - `/jobs/:id` Detail: external apply and I applied
 - `/me` Accountability: nickname, weekly target, application log, reminders

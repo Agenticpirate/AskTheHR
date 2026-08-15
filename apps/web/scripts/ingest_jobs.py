@@ -17,7 +17,6 @@ from urllib.parse import urlparse, urlunparse
 NORM = Path("/workspace/jobs/normalized")
 COMBINED = Path("/workspace/jobs/remote-aug2026.jsonl")
 OUT_DIR = Path(__file__).resolve().parents[1] / "public"
-PRIMARY_CAP = 3000
 TARGET = {
     "USA", "India", "Canada", "UK", "Australia",
     "Germany", "Netherlands", "Ireland", "Singapore", "France",
@@ -344,6 +343,7 @@ def rank(o: dict, source_pri: int) -> tuple:
         1 if is_ats_host(host) else 0,
         1 if is_company_career_host(host) else 0,
         1 if o.get("country") == "India" else 0,
+        1 if o.get("country") in TARGET else 0,
         aug,
         posted or "",
         1 if o.get("description") else 0,
@@ -396,7 +396,7 @@ def main() -> None:
 
     ranked = sorted(kept.values(), key=lambda x: x[0], reverse=True)
     corpus = [j for _, j in ranked]
-    primary = corpus[:PRIMARY_CAP]
+    primary = corpus
 
     leaked = [j for j in primary if not is_employer_apply_url(j["url"])]
     if leaked:

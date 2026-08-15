@@ -55,7 +55,7 @@ export function CompanyLogo({
       height={size}
       decoding="async"
       referrerPolicy="no-referrer"
-      className={cn("shrink-0 rounded-sm bg-white object-contain", box, className)}
+      className={cn("shrink-0 rounded-sm bg-white object-contain ring-1 ring-border", box, className)}
       onError={() => {
         setPhase((current) => (current === "primary" ? "fallback" : "initials"));
       }}

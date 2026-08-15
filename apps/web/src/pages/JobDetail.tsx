@@ -1,4 +1,5 @@
 import { Link, useParams } from "react-router-dom";
+import { Orb } from "@/components/Orb";
 import { CompanyLogo } from "@/components/CompanyLogo";
 import { JobTable } from "@/components/JobTable";
 import { Badge } from "@/components/ui/badge";
@@ -18,7 +19,12 @@ export function JobDetail() {
   const tracker = useTracker();
 
   if (!job && (loading || loadingMore)) {
-    return <p className="text-sm text-muted-foreground">Looking up this role…</p>;
+    return (
+      <p className="flex items-center gap-2 text-sm text-muted-foreground">
+        <Orb state="searching" size={20} aria-label="Looking up this role…" />
+        Looking up this role…
+      </p>
+    );
   }
   if (!job) {
     return (

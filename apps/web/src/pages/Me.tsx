@@ -1,5 +1,6 @@
 import { FormEvent, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { CheckInButton } from "@/components/Orb";
 import { PageEnter, Section } from "@/components/PageEnter";
 import { PipelineTable } from "@/components/PipelineTable";
 import { ReminderSettings } from "@/components/ReminderSettings";
@@ -127,13 +128,7 @@ export function Me() {
       <Section delay={0.06} className="mb-12">
         <TodayRings rings={tracker.rings} onAdjust={onAdjust} />
         <div className="mt-6 flex flex-wrap items-center gap-4">
-          <Button
-            type="button"
-            disabled={tracker.today.checkedIn}
-            onClick={() => tracker.checkIn()}
-          >
-            {tracker.today.checkedIn ? "Checked in" : "I'm here today"}
-          </Button>
+          <CheckInButton checkedIn={tracker.today.checkedIn} onCheckIn={() => tracker.checkIn()} />
           <label className="grid min-w-[220px] flex-1 gap-1.5">
             <span className="micro">Skill note</span>
             <Input

@@ -1,5 +1,6 @@
 import { FormEvent, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { Orb } from "@/components/Orb";
 import { PageEnter, Section } from "@/components/PageEnter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -147,6 +148,11 @@ export function Join() {
                 aria-invalid={status === "invalid" || status === "reserved" || status === "taken"}
                 className="w-full bg-transparent font-mono text-2xl tracking-tight outline-none placeholder:text-muted-foreground/50 md:text-3xl"
               />
+              {status === "checking" ? (
+                <span className="mb-1 shrink-0">
+                  <Orb state="searching" size={20} aria-label="Checking username…" />
+                </span>
+              ) : null}
             </div>
             <StatusLine status={status} empty={!username.trim()} />
           </label>

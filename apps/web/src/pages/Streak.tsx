@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { CheckInButton } from "@/components/Orb";
 import { CountUp } from "@/components/CountUp";
 import { Heatmap } from "@/components/Heatmap";
 import { PageEnter, Section, Stagger, StaggerItem } from "@/components/PageEnter";
@@ -23,6 +24,9 @@ export function Streak() {
           Daily and weekly discipline, badges, and XP. Browser reminders are free. WhatsApp is
           paid-only.
         </p>
+        <div className="mt-6">
+          <CheckInButton checkedIn={tracker.today.checkedIn} onCheckIn={() => tracker.checkIn()} />
+        </div>
       </Section>
 
       <Section delay={0.06} className="mb-12">

@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { ChevronDown } from "lucide-react";
 import { JobTable } from "@/components/JobTable";
+import { BoardLoading } from "@/components/Orb";
 import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
 import {
@@ -147,10 +148,14 @@ export function Jobs() {
         </span>
       </div>
 
-      <JobTable
-        jobs={slice}
-        empty={error ? error : "Nothing matches those filters. Widen country or search."}
-      />
+      {loading && slice.length === 0 ? (
+        <BoardLoading label="Loading the board…" />
+      ) : (
+        <JobTable
+          jobs={slice}
+          empty={error ? error : "Nothing matches those filters. Widen country or search."}
+        />
+      )}
 
       {pages > 1 ? (
         <div className="mt-4 flex items-center justify-center gap-2">

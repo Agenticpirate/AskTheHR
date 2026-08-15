@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { HeroField, HeroHeadline } from "@/components/HeroField";
 import { JobTable } from "@/components/JobTable";
+import { BoardLoading } from "@/components/Orb";
 import { KpiCard } from "@/components/KpiCard";
 import { PageEnter, Section, Stagger, StaggerItem } from "@/components/PageEnter";
 import { TodayRings } from "@/components/TodayRings";
@@ -124,10 +125,14 @@ export function Home() {
             <Link to="/jobs?work=remote">See all remote</Link>
           </Button>
         </div>
-        <JobTable
-          jobs={featured}
-          empty={loading ? "Loading featured roles…" : error ? "Job feed unavailable." : "No remote roles in this slice yet."}
-        />
+        {loading ? (
+          <BoardLoading label="Loading the board…" />
+        ) : (
+          <JobTable
+            jobs={featured}
+            empty={error ? "Job feed unavailable." : "No remote roles in this slice yet."}
+          />
+        )}
       </Section>
     </PageEnter>
   );

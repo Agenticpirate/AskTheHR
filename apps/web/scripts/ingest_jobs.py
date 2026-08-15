@@ -10,7 +10,7 @@ from urllib.parse import urlparse, urlunparse
 MASTER = Path("/workspace/jobs/remote-aug2026.jsonl")
 NORM = Path("/workspace/jobs/normalized")
 SUMMARY = Path("/workspace/jobs/summary.json")
-OUT_DIR = Path("/workspace/seeker-board/public")
+OUT_DIR = Path(__file__).resolve().parents[1] / "public"
 PRIMARY_CAP = 3000
 TARGET = {
     "USA", "India", "Canada", "UK", "Australia",
@@ -98,16 +98,40 @@ def rank(o: dict) -> tuple:
     )
 
 
+def iter_jsonl(path: Path):
+    with path.open() as fh:
+        for line in fh:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                yield json.loads(line)
+            except json.JSONDecodeError:
+                continue
+
+
+def country_slice(by_country):
+    if not isinstance(by_country, dict):
+        return None
+    return {k: int(by_country.get(k) or 0) for k in TARGET}
+
+
 def main() -> None:
-    seen: dict[str, dict] = {}
-    raw_n = 0
+    import heapq
+
     paths: list[Path] = []
     if MASTER.exists():
         paths.append(MASTER)
     else:
         paths.extend(sorted(NORM.glob("*.jsonl")))
+
+    # Min-heap of the best PRIMARY_CAP rows (remote-first). Never keep the full 1.5M set.
+    heap: list[tuple] = []
+    raw_n = 0
+    kept_urls: dict[str, int] = {}
+    seq = 0
     for path in paths:
-        for row in load_jsonl(path):
+        for row in iter_jsonl(path):
             raw_n += 1
             c = clean(row)
             if not c:
@@ -115,45 +139,58 @@ def main() -> None:
             key = norm_url(c["url"])
             if not key:
                 continue
-            seen[key] = richer(seen[key], c) if key in seen else c
-    unique = list(seen.values())
-    unique.sort(key=rank, reverse=True)
-    primary = unique[:PRIMARY_CAP]
-    rest = unique[PRIMARY_CAP:]
+            r = rank(c)
+            if key in kept_urls:
+                idx = kept_urls[key]
+                # heap entries are (rank, seq, url, job); replace if richer/better
+                for i, item in enumerate(heap):
+                    if item[2] == key:
+                        if r > item[0] or richer(c, item[3]) is c:
+                            heap[i] = (r, item[1], key, c)
+                            heapq.heapify(heap)
+                        break
+                continue
+            if len(heap) < PRIMARY_CAP:
+                heapq.heappush(heap, (r, seq, key, c))
+                kept_urls[key] = 1
+                seq += 1
+            elif r > heap[0][0]:
+                evicted = heapq.heapreplace(heap, (r, seq, key, c))
+                kept_urls.pop(evicted[2], None)
+                kept_urls[key] = 1
+                seq += 1
+
+    primary = [item[3] for item in sorted(heap, key=lambda x: x[0], reverse=True)]
     summary = {}
     if SUMMARY.exists():
         try:
             summary = json.loads(SUMMARY.read_text())
         except json.JSONDecodeError:
             summary = {}
-    total = int(summary.get("total") or len(unique))
+    total = int(summary.get("total") or raw_n)
     OUT_DIR.mkdir(parents=True, exist_ok=True)
+    more_count = max(0, total - len(primary))
     meta = {
         "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "month": "2026-08",
         "total": total,
-        "shown": len(unique),
+        "shown": len(primary),
         "primary": len(primary),
-        "more": len(rest) > 0,
-        "more_count": len(rest),
+        "more": False,
+        "more_count": 0,
         "by_remote": summary.get("by_remote"),
-        "by_country": summary.get("by_country"),
+        "by_country": country_slice(summary.get("by_country")),
         "by_source": summary.get("by_source"),
     }
     payload = {**meta, "jobs": primary}
-    (OUT_DIR / "jobs.json").write_text(
-        json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
-    )
-    if rest:
-        (OUT_DIR / "jobs-more.json").write_text(
-            json.dumps({"jobs": rest}, ensure_ascii=False, separators=(",", ":"))
-        )
-    remote = sum(1 for j in unique if j["remote"])
-    print(f"raw={raw_n} unique={len(unique)} primary={len(primary)} more={len(rest)} remote={remote}")
-    print("jobs.json", (OUT_DIR / "jobs.json").stat().st_size)
+    out = OUT_DIR / "jobs.json"
+    out.write_text(json.dumps(payload, ensure_ascii=False, separators=(",", ":")))
     more_p = OUT_DIR / "jobs-more.json"
     if more_p.exists():
-        print("jobs-more.json", more_p.stat().st_size)
+        more_p.unlink()
+    remote = sum(1 for j in primary if j["remote"])
+    print(f"raw={raw_n} primary={len(primary)} remote_in_slice={remote} corpus_total={total} not_shipped={more_count}")
+    print("jobs.json", out.stat().st_size, "->", out)
 
 if __name__ == "__main__":
     main()

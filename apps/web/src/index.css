@@ -195,6 +195,11 @@
   to { opacity: 1; }
 }
 
+.marketing-defer {
+  content-visibility: auto;
+  contain-intrinsic-size: auto none auto 36rem;
+}
+
 .hero-field {
   --spot-x: 50%;
   --spot-y: 28%;

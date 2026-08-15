@@ -14,7 +14,8 @@ Coverage is ten countries: USA, India, Canada, UK, Australia, Germany, Netherlan
 
 | Path | Purpose |
 |---|---|
-| `/` | Home, KPI cards, featured remote roles, country chips |
+| `/` | AskTheHR marketing homepage (no app sidebar) |
+| `/app` | App home: KPI cards, featured remote roles, country chips |
 | `/jobs` | Search and filters |
 | `/jobs/:id` | Role detail and apply |
 | `/me` | Weekly target, application log, reminders |

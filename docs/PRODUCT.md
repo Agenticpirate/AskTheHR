@@ -12,7 +12,8 @@ USA, India, Canada, UK, Australia, Germany, Netherlands, Ireland, Singapore, Fra
 
 ## Surfaces
 
-- Home: KPI cards, country chips, featured remote roles
+- Marketing `/`: AskTheHR company page. Cadence is paid accountability. 0penings is the free employer-direct board inside Cadence.
+- App home `/app`: KPI cards, country chips, featured remote roles
 - Jobs: search, country, state/city, remote vs on-site, pagination
 - Job detail: outbound apply, I applied log
 - My week: nickname, weekly target (default 8), application log, reminders
@@ -31,6 +32,7 @@ Vite + React + TypeScript + Tailwind + shadcn/ui. Static host is Cloudflare Page
 
 ## Brand rules
 
-- Product name is 0pening (leading zero). Never write Opening.
-- Marketing name is AskTheHR.
-- User-facing copy in the web app uses 0pening.
+- AskTheHR is the company.
+- Cadence is paid accountability.
+- 0penings (leading zero) is the free employer-direct job board inside Cadence. Never write Opening.
+- App chrome still says 0pening for the workspace.

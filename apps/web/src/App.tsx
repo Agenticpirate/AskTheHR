@@ -8,6 +8,8 @@ import { Streak } from "./pages/Streak";
 import { Board } from "./pages/Board";
 import { Countries } from "./pages/Countries";
 import { Country } from "./pages/Country";
+import { Join } from "./pages/Join";
+import { Terms } from "./pages/Terms";
 
 export default function App() {
   return (
@@ -21,6 +23,8 @@ export default function App() {
         <Route path="/board" element={<Board />} />
         <Route path="/countries" element={<Countries />} />
         <Route path="/countries/:slug" element={<Country />} />
+        <Route path="/join" element={<Join />} />
+        <Route path="/terms" element={<Terms />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
     </Routes>

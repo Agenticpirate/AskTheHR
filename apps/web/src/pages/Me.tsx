@@ -1,4 +1,4 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { PageEnter, Section } from "@/components/PageEnter";
 import { PipelineTable } from "@/components/PipelineTable";
@@ -11,6 +11,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { formatMissionDate, formatWeekLabel, weekKey } from "@/lib/dates";
 import { publishEntry, unpublishEntry } from "@/lib/leaderboard";
+import { checkUsername } from "@/lib/username-api";
+import { isReservedUsername } from "@/data/reserved-usernames";
 import { TRACKS, type RingId } from "@/lib/tracker";
 import { useTracker } from "@/lib/useTracker";
 
@@ -22,6 +24,23 @@ export function Me() {
   const [skillNote, setSkillNote] = useState(tracker.today.skillNote ?? "");
   const [busy, setBusy] = useState(false);
   const remaining = Math.max(0, tracker.target - tracker.thisWeek);
+  const reclaimed = Boolean(tracker.profile.usernameReclaimed) && !tracker.profile.username;
+
+  useEffect(() => {
+    const current = tracker.profile.username;
+    if (!current) return;
+    if (isReservedUsername(current)) {
+      tracker.markUsernameReclaimed();
+      return;
+    }
+    let live = true;
+    void checkUsername(current).then((r) => {
+      if (live && r.reason === "reserved") tracker.markUsernameReclaimed();
+    });
+    return () => {
+      live = false;
+    };
+  }, [tracker.profile.username]);
 
   if (!tracker.track) {
     return <TrackChooser onPick={tracker.setTrack} />;
@@ -83,9 +102,18 @@ export function Me() {
               {tracker.nickname ? tracker.nickname : "Command"}
             </h1>
             <p className="mt-3 text-base text-muted-foreground">
-              {TRACKS[tracker.track].label} · daily {tracker.dailyStreak} · week {tracker.thisWeek}/
+              {TRACKS[tracker.track].label}
+              {tracker.profile.username ? ` · @${tracker.profile.username}` : ""} · daily {tracker.dailyStreak} · week {tracker.thisWeek}/
               {tracker.target}
             </p>
+            {reclaimed ? (
+              <p className="mt-3 max-w-lg text-sm text-muted-foreground">
+                This name was released after a trademark request. Pick another.{" "}
+                <Link to="/join" className="text-primary underline-offset-4 hover:underline">
+                  Claim a name
+                </Link>
+              </p>
+            ) : null}
           </div>
           <div className="w-full max-w-sm">
             <XpBar xp={tracker.xp} level={tracker.level} />
@@ -207,6 +235,16 @@ export function Me() {
             <CardTitle className="text-2xl tracking-tight">Setup</CardTitle>
           </CardHeader>
           <CardContent className="grid gap-4">
+            <label className="grid gap-1.5">
+              <span className="micro">Username</span>
+              {tracker.profile.username ? (
+                <p className="font-mono text-sm">@{tracker.profile.username}</p>
+              ) : (
+                <Button variant="outline" size="sm" asChild className="w-fit">
+                  <Link to="/join">{reclaimed ? "Pick another name" : "Claim your 0pening name"}</Link>
+                </Button>
+              )}
+            </label>
             <label className="grid gap-1.5">
               <span className="micro">Nickname</span>
               <Input

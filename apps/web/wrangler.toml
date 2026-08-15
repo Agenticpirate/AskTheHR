@@ -9,3 +9,9 @@ pages_build_output_dir = "dist"
 
 # Optional Cloud API env for /api/remind: WHATSAPP_TOKEN, PHONE_ID
 # Missing either returns 501 whatsapp_not_configured.
+
+# Bind KV namespace USERNAMES in the Cloudflare Pages dashboard
+# (Settings → Functions → KV namespace bindings). /api/username
+# falls back to in-memory storage if the binding is missing — never 500s,
+# never invents users. Reserved names always win over KV.
+

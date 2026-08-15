@@ -22,6 +22,8 @@ Coverage is ten countries: USA, India, Canada, UK, Australia, Germany, Netherlan
 | `/board` | Public opt-in leaderboard |
 | `/countries` | Ten markets |
 | `/countries/:slug` | Country slice |
+| `/join` | Claim a username |
+| `/terms` | Terms: names, reclaim, employer apply links |
 
 ## Hosting
 

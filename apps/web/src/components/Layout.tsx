@@ -7,6 +7,7 @@ import {
   LayoutDashboard,
   Target,
   Trophy,
+  UserPlus,
 } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Button } from "@/components/ui/button";
@@ -41,6 +42,8 @@ const nav = [
   { to: "/board", label: "Board", icon: Trophy, end: false },
 ];
 
+const joinItem = { to: "/join", label: "Join", icon: UserPlus, end: true };
+
 function pageMeta(pathname: string): { title: string; kicker: string } {
   if (pathname === "/") return { title: "Home", kicker: "Overview" };
   if (pathname === "/jobs") return { title: "Jobs", kicker: "Board" };
@@ -50,6 +53,8 @@ function pageMeta(pathname: string): { title: string; kicker: string } {
   if (pathname === "/board") return { title: "Board", kicker: "Public" };
   if (pathname === "/countries") return { title: "Countries", kicker: "Markets" };
   if (pathname.startsWith("/countries/")) return { title: "Market", kicker: "Countries" };
+  if (pathname === "/join") return { title: "Join", kicker: "Name" };
+  if (pathname === "/terms") return { title: "Terms", kicker: "Legal" };
   return { title: "0pening", kicker: "Dashboard" };
 }
 
@@ -69,7 +74,8 @@ function Mark() {
   );
 }
 
-function AppSidebar({ locPath }: { locPath: string }) {
+function AppSidebar({ locPath, showJoin }: { locPath: string; showJoin: boolean }) {
+  const items = showJoin ? [nav[0], joinItem, ...nav.slice(1)] : nav;
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader className="px-3 py-3">
@@ -86,7 +92,7 @@ function AppSidebar({ locPath }: { locPath: string }) {
           <SidebarGroupLabel>Workspace</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {nav.map((item) => {
+              {items.map((item) => {
                 const isActive = item.end
                   ? locPath === item.to
                   : locPath === item.to || locPath.startsWith(`${item.to}/`);
@@ -111,6 +117,12 @@ function AppSidebar({ locPath }: { locPath: string }) {
           <br />
           Ten countries. No account.
         </p>
+        <NavLink
+          to="/terms"
+          className="mt-2 px-1 text-[11px] text-muted-foreground underline-offset-4 hover:text-foreground hover:underline group-data-[collapsible=icon]:hidden"
+        >
+          Terms
+        </NavLink>
       </SidebarFooter>
     </Sidebar>
   );
@@ -186,7 +198,7 @@ export function Layout() {
 
   return (
     <SidebarProvider>
-      <AppSidebar locPath={loc.pathname} />
+      <AppSidebar locPath={loc.pathname} showJoin={!tracker.profile.username} />
       <SidebarInset>
         <header className="sticky top-0 z-20 flex h-14 shrink-0 items-center gap-3 border-b bg-background/80 px-4 backdrop-blur-md">
           <SidebarTrigger className="-ml-1" />
@@ -208,7 +220,11 @@ export function Layout() {
             <Button variant="ghost" size="sm" asChild className="hidden sm:inline-flex">
               <NavLink to="/streak" className="gap-2">
                 <span className="text-muted-foreground">
-                  {tracker.nickname ? tracker.nickname : "Streak"}
+                  {tracker.profile.username
+                    ? `@${tracker.profile.username}`
+                    : tracker.nickname
+                      ? tracker.nickname
+                      : "Streak"}
                 </span>
                 <span className="font-mono tabular-nums font-medium">{tracker.dailyStreak}</span>
               </NavLink>
@@ -225,6 +241,14 @@ export function Layout() {
             </div>
           )}
         </div>
+        <footer className="mt-auto border-t px-5 py-5 md:px-12">
+          <div className="mx-auto flex w-full max-w-[1120px] items-center justify-between gap-4 text-xs text-muted-foreground">
+            <span>0pening · AskTheHR</span>
+            <NavLink to="/terms" className="hover:text-foreground">
+              Terms
+            </NavLink>
+          </div>
+        </footer>
       </SidebarInset>
     </SidebarProvider>
   );

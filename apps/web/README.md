@@ -15,6 +15,8 @@ August 2026 openings across USA, India, Canada, UK, Australia, Germany, Netherla
 - `/board` Public opt-in leaderboard
 - `/countries` Ten markets
 - `/countries/:slug` Country slice
+- `/join` Claim a 0pening name (local profile + `/api/username`)
+- `/terms` Short terms: usernames, trademark reclaim, employer apply links
 
 ## Scripts
 
@@ -72,3 +74,12 @@ Header sun/moon cycles light, dark, then system. Persisted as localStorage 0peni
 ## Paid messaging
 
 WhatsApp reminders require profile.plan = paid. POST /api/remind rejects free plans, never sends when enabled is false, and returns 501 whatsapp_not_configured when Cloud API env is missing. Free users keep browser reminders. Messaging turns off when the plan ends.
+
+## Usernames
+
+`/join` claims a handle (3–20, letter first, `[a-z0-9_]`). Reserved brands and
+public-figure lookalikes live in `src/data/reserved-usernames.ts` and always
+win. POST `/api/username` stores claims in the `USERNAMES` KV binding, or
+in-memory when the binding is missing. A username is a license — 0pening may
+reclaim it after a trademark or impersonation complaint.
+

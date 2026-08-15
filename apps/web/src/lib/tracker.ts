@@ -1,4 +1,5 @@
 import { addDays, dayKey, daysSince, formatLoggedTime, startOfWeek, weekKey } from "./dates";
+import { isReservedUsername, parseUsername } from "./username";
 
 export type AppStatus = "applied" | "followed_up" | "interview" | "offer" | "rejected";
 export type TrackId = "fresh" | "experienced";
@@ -49,6 +50,10 @@ export type ReminderPrefs = {
 
 export type Profile = {
   nickname: string;
+  username?: string;
+  usernameClaimedAt?: string;
+  usernameReclaimed?: boolean;
+  email?: string;
   track: Track;
   weeklyTarget: number;
   dailyMinutes: number;
@@ -334,8 +339,19 @@ function revive(raw: unknown): TrackerState {
   const plan: Plan = o.profile?.plan === "paid" ? "paid" : "free";
   let whatsapp = reviveWhatsApp(o.profile?.whatsapp);
   if (plan !== "paid") whatsapp = { ...whatsapp, enabled: false };
+  const claimed = parseUsername(o.profile?.username ?? "") ?? undefined;
+  const reservedNow = Boolean(claimed && isReservedUsername(claimed));
   let profile: Profile = {
     nickname: String(o.profile?.nickname ?? ""),
+    username: reservedNow ? undefined : claimed,
+    usernameClaimedAt:
+      typeof o.profile?.usernameClaimedAt === "string" && o.profile.usernameClaimedAt.length > 8
+        ? o.profile.usernameClaimedAt
+        : undefined,
+    usernameReclaimed: Boolean(o.profile?.usernameReclaimed) || reservedNow,
+    email: typeof o.profile?.email === "string" && o.profile.email.trim()
+      ? o.profile.email.trim().slice(0, 120)
+      : undefined,
     track,
     weeklyTarget: clampTarget(Number(o.profile?.weeklyTarget), 8),
     dailyMinutes: Number(o.profile?.dailyMinutes) || 0,
@@ -729,6 +745,45 @@ export function setTrack(state: TrackerState, track: TrackId): TrackerState {
 
 export function setNickname(state: TrackerState, nickname: string): TrackerState {
   return { ...state, profile: { ...state.profile, nickname } };
+}
+
+export function claimUsername(
+  state: TrackerState,
+  username: string,
+  opts?: { displayName?: string; email?: string },
+): TrackerState {
+  const parsed = parseUsername(username);
+  if (!parsed || isReservedUsername(parsed)) return state;
+  const display =
+    typeof opts?.displayName === "string"
+      ? opts.displayName.replace(/[\u0000-\u001f\u007f]/g, "").replace(/\s+/g, " ").trim().slice(0, 32)
+      : "";
+  const email =
+    typeof opts?.email === "string" ? opts.email.trim().slice(0, 120) : "";
+  const nickname = state.profile.nickname.trim() || display || parsed;
+  return {
+    ...state,
+    profile: {
+      ...state.profile,
+      username: parsed,
+      usernameClaimedAt: new Date().toISOString(),
+      usernameReclaimed: false,
+      nickname,
+      email: email || state.profile.email,
+    },
+  };
+}
+
+export function markUsernameReclaimed(state: TrackerState): TrackerState {
+  if (state.profile.usernameReclaimed && !state.profile.username) return state;
+  return {
+    ...state,
+    profile: {
+      ...state.profile,
+      username: undefined,
+      usernameReclaimed: true,
+    },
+  };
 }
 
 export function setWeeklyTarget(state: TrackerState, weeklyTarget: number): TrackerState {

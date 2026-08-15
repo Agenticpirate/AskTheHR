@@ -18,6 +18,8 @@ USA, India, Canada, UK, Australia, Germany, Netherlands, Ireland, Singapore, Fra
 - My week: nickname, weekly target (default 8), application log, reminders
 - Streak: daily/weekly streak, badges, XP, heatmap, share
 - Countries: ten-market index and per-country slice
+- Join: claim a 0pening name (license, not property)
+- Terms: usernames, reserved names, trademark reclaim, employer apply links
 
 ## Accountability
 

@@ -18,6 +18,8 @@ import {
   ringsHitCount,
   setApplicationStatus,
   setNickname as writeNickname,
+  claimUsername as writeUsername,
+  markUsernameReclaimed as writeReclaimed,
   setPlan,
   setReminder,
   setSkillNote,
@@ -104,6 +106,9 @@ export function useTracker() {
     published: state.published,
     shareText: shareLine(state),
     setNickname: (nickname: string) => commit(writeNickname(state, nickname)),
+    claimUsername: (username: string, opts?: { displayName?: string; email?: string }) =>
+      commit(writeUsername(state, username, opts)),
+    markUsernameReclaimed: () => commit(writeReclaimed(state)),
     setTarget: (weeklyTarget: number) => commit(setWeeklyTarget(state, weeklyTarget)),
     setTrack: (track: TrackId) => commit(setTrack(state, track)),
     setPlan: (plan: Plan) => commit(setPlan(state, plan)),

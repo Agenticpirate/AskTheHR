@@ -15,7 +15,8 @@ USA, India, Canada, UK, Australia, Germany, Netherlands, Ireland, Singapore, Fra
 - Home: KPI cards, country chips, featured remote roles
 - Jobs: search, country, state/city, remote vs on-site, pagination
 - Job detail: outbound apply, I applied log
-- My week: nickname, weekly target (default 8), streak, application log
+- My week: nickname, weekly target (default 8), application log, reminders
+- Streak: daily/weekly streak, badges, XP, heatmap, share
 - Countries: ten-market index and per-country slice
 
 ## Accountability

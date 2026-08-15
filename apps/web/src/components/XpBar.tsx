@@ -43,7 +43,7 @@ export function XpBar({ xp, level }: { xp: number; level: LevelInfo }) {
           {level.next !== null ? ` / ${level.next}` : " XP"}
         </div>
       </div>
-      <div className="relative h-1.5 overflow-hidden rounded-full bg-white/10">
+      <div className="relative h-1.5 overflow-hidden rounded-full bg-foreground/10">
         <div
           ref={fill}
           className="h-full rounded-full bg-primary"

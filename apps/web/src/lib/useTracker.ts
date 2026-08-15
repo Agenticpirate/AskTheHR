@@ -11,22 +11,30 @@ import {
   levelFor,
   localStore,
   logApplication,
+  markReminderFired,
   markShared,
+  recentUnlocks,
   removeApplication,
   ringsHitCount,
   setApplicationStatus,
   setNickname as writeNickname,
+  setPlan,
+  setReminder,
   setSkillNote,
   setTrack,
   setPublished,
   setWeeklyTarget,
+  setWhatsApp,
   shareLine,
   todayRings,
   weekCount,
   type Application,
   type AppStatus,
+  type Plan,
+  type ReminderPrefs,
   type TrackId,
   type TrackerState,
+  type WhatsAppPrefs,
 } from "./tracker";
 
 const EVT = "seeker-tracker";
@@ -58,6 +66,7 @@ export function useTracker() {
   const rings = useMemo(() => todayRings(state), [state]);
   const ringsHit = ringsHitCount(state);
   const level = useMemo(() => levelFor(state.xp), [state.xp]);
+  const unlocks = useMemo(() => recentUnlocks(state), [state]);
   const todayKey = useMemo(() => {
     const d = new Date();
     const y = d.getFullYear();
@@ -81,9 +90,13 @@ export function useTracker() {
     nickname: state.profile.nickname,
     track: state.profile.track,
     profile: state.profile,
+    plan: state.profile.plan,
+    whatsapp: state.profile.whatsapp,
+    reminder: state.profile.reminder,
     xp: state.xp,
     level,
     badges: state.badges,
+    unlocks,
     rings,
     ringsHit,
     today: todayLog,
@@ -93,6 +106,10 @@ export function useTracker() {
     setNickname: (nickname: string) => commit(writeNickname(state, nickname)),
     setTarget: (weeklyTarget: number) => commit(setWeeklyTarget(state, weeklyTarget)),
     setTrack: (track: TrackId) => commit(setTrack(state, track)),
+    setPlan: (plan: Plan) => commit(setPlan(state, plan)),
+    setWhatsApp: (patch: Partial<WhatsAppPrefs>) => commit(setWhatsApp(state, patch)),
+    setReminder: (patch: Partial<ReminderPrefs>) => commit(setReminder(state, patch)),
+    markReminderFired: (date: string) => commit(markReminderFired(state, date)),
     log: (input: Omit<Application, "id" | "appliedAt"> & { appliedAt?: string }) =>
       commit(logApplication(state, input)),
     remove: (id: string) => commit(removeApplication(state, id)),

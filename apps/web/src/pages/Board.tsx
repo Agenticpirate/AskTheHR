@@ -37,7 +37,7 @@ export function Board() {
     <PageEnter>
       <Section>
         <div className="micro text-primary">Public</div>
-        <h1 className="mt-2 text-4xl tracking-tight md:text-5xl">Board</h1>
+        <h1 className="mt-3 text-5xl tracking-tight md:text-6xl">Board.</h1>
         <p className="mt-3 max-w-xl text-sm text-muted-foreground">
           Ranked by daily streak, then weekly streak, then XP. Opt-in from Me. No accounts.
         </p>
@@ -65,13 +65,13 @@ export function Board() {
             <Table>
               <TableHeader>
                 <TableRow className="hover:bg-transparent">
-                  <TableHead className="pl-4">Rank</TableHead>
+                  <TableHead>Rank</TableHead>
                   <TableHead>Seeker</TableHead>
                   <TableHead>Track</TableHead>
                   <TableHead>Daily</TableHead>
                   <TableHead>Weekly</TableHead>
                   <TableHead>Level</TableHead>
-                  <TableHead className="pr-4">XP</TableHead>
+                  <TableHead>XP</TableHead>
                 </TableRow>
               </TableHeader>
               <motion.tbody
@@ -108,9 +108,9 @@ function BoardRow({
   return (
     <motion.tr
       variants={itemRise}
-      className={`border-b ${mine ? "bg-primary/10" : "hover:bg-white/[0.03]"}`}
+      className={`border-b ${mine ? "bg-primary/10" : "hover:bg-muted/50"}`}
     >
-      <TableCell className="pl-4 font-mono tabular-nums">
+      <TableCell className="font-mono tabular-nums">
         <CountUp value={rank} duration={0.5} />
       </TableCell>
       <TableCell className="font-medium">
@@ -121,7 +121,7 @@ function BoardRow({
       <TableCell className="font-mono tabular-nums">{row.dailyStreak}</TableCell>
       <TableCell className="font-mono tabular-nums">{row.weeklyStreak}</TableCell>
       <TableCell>{row.level}</TableCell>
-      <TableCell className="pr-4 font-mono tabular-nums">{row.xp}</TableCell>
+      <TableCell className="font-mono tabular-nums">{row.xp}</TableCell>
     </motion.tr>
   );
 }

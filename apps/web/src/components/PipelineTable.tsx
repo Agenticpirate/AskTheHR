@@ -34,11 +34,11 @@ export function PipelineTable({
       <Table>
         <TableHeader>
           <TableRow className="hover:bg-transparent">
-            <TableHead className="pl-4">Role</TableHead>
+            <TableHead>Role</TableHead>
             <TableHead>Company</TableHead>
             <TableHead>Date</TableHead>
             <TableHead>Status</TableHead>
-            <TableHead className="pr-4 text-right"> </TableHead>
+            <TableHead className="text-right"> </TableHead>
           </TableRow>
         </TableHeader>
         <motion.tbody
@@ -50,9 +50,9 @@ export function PipelineTable({
             <motion.tr
               key={a.id}
               variants={itemRise}
-              className="border-b hover:bg-white/[0.03]"
+              className="border-b hover:bg-muted/50"
             >
-              <TableCell className="max-w-[240px] pl-4 whitespace-normal font-medium">
+              <TableCell className="max-w-[240px] whitespace-normal font-medium">
                 {a.title}
               </TableCell>
               <TableCell className="text-muted-foreground">
@@ -74,7 +74,7 @@ export function PipelineTable({
                   ))}
                 </select>
               </TableCell>
-              <TableCell className="pr-4 text-right">
+              <TableCell className="text-right">
                 <Button type="button" variant="ghost" size="xs" onClick={() => onRemove(a.id)}>
                   Remove
                 </Button>

@@ -32,6 +32,21 @@ export type Application = {
   status?: AppStatus;
 };
 
+export type Plan = "free" | "paid";
+
+export type WhatsAppPrefs = {
+  optedIn: boolean;
+  phone: string;
+  enabled: boolean;
+};
+
+export type ReminderPrefs = {
+  enabled: boolean;
+  time: string;
+  timezone: string;
+  lastFired?: string;
+};
+
 export type Profile = {
   nickname: string;
   track: Track;
@@ -41,6 +56,9 @@ export type Profile = {
   dailySkillMinutes: number;
   dailyOutreach: number;
   createdAt: string;
+  plan: Plan;
+  whatsapp: WhatsAppPrefs;
+  reminder: ReminderPrefs;
 };
 
 export type DayLog = {
@@ -58,6 +76,7 @@ export type TrackerState = {
   days: Record<string, DayLog>;
   xp: number;
   badges: string[];
+  badgeUnlocks: Record<string, string>;
   publicId: string;
   published: boolean;
 };
@@ -125,12 +144,25 @@ export function levelFor(xp: number): LevelInfo {
 
 export const BADGE_META: Record<string, { label: string; hint: string }> = {
   "first-apply": { label: "First apply", hint: "Logged the first application" },
+  "daily-7": { label: "7-day streak", hint: "Seven consecutive active days" },
+  "daily-30": { label: "30-day streak", hint: "Thirty consecutive active days" },
   "week-7-checkins": { label: "Full week", hint: "Seven check-ins in a week" },
   "week-hit": { label: "Week hit", hint: "Hit a weekly application target" },
   "apps-50": { label: "50 applications", hint: "Fifty tailored applications logged" },
   "skill-week": { label: "Skill week", hint: "Five days with skill work in a week" },
   shared: { label: "Broadcast", hint: "Shared a progress card" },
 };
+
+export const BADGE_ORDER = [
+  "first-apply",
+  "daily-7",
+  "daily-30",
+  "week-7-checkins",
+  "week-hit",
+  "skill-week",
+  "apps-50",
+  "shared",
+] as const;
 
 export type RingId = "minutes" | "apps" | "skill" | "outreach";
 
@@ -166,6 +198,51 @@ export function emptyDay(): DayLog {
   return { minutes: 0, skillMinutes: 0, outreach: 0, checkedIn: false };
 }
 
+export function defaultWhatsApp(): WhatsAppPrefs {
+  return { optedIn: false, phone: "", enabled: false };
+}
+
+export function defaultReminder(): ReminderPrefs {
+  return { enabled: false, time: "09:00", timezone: "Asia/Calcutta" };
+}
+
+function reviveWhatsApp(raw: unknown): WhatsAppPrefs {
+  const base = defaultWhatsApp();
+  if (!raw || typeof raw !== "object") return base;
+  const o = raw as Partial<WhatsAppPrefs>;
+  return {
+    optedIn: Boolean(o.optedIn),
+    phone: typeof o.phone === "string" ? o.phone.trim().slice(0, 24) : "",
+    enabled: Boolean(o.enabled),
+  };
+}
+
+function reviveReminder(raw: unknown): ReminderPrefs {
+  const base = defaultReminder();
+  if (!raw || typeof raw !== "object") return base;
+  const o = raw as Partial<ReminderPrefs>;
+  const time = typeof o.time === "string" ? o.time : base.time;
+  const m = /^(\d{1,2}):(\d{2})/.exec(time.trim());
+  const norm = m
+    ? `${String(Math.min(23, Math.max(0, Number(m[1])))).padStart(2, "0")}:${String(Math.min(59, Math.max(0, Number(m[2])))).padStart(2, "0")}`
+    : base.time;
+  return {
+    enabled: Boolean(o.enabled),
+    time: norm,
+    timezone: typeof o.timezone === "string" && o.timezone.trim() ? o.timezone.trim() : base.timezone,
+    lastFired: typeof o.lastFired === "string" && /^\d{4}-\d{2}-\d{2}$/.test(o.lastFired) ? o.lastFired : undefined,
+  };
+}
+
+function reviveUnlocks(raw: unknown): Record<string, string> {
+  if (!raw || typeof raw !== "object") return {};
+  const next: Record<string, string> = {};
+  for (const [k, v] of Object.entries(raw as Record<string, unknown>)) {
+    if (typeof k === "string" && typeof v === "string") next[k] = v;
+  }
+  return next;
+}
+
 export function defaultState(): TrackerState {
   return {
     profile: {
@@ -177,11 +254,15 @@ export function defaultState(): TrackerState {
       dailySkillMinutes: 0,
       dailyOutreach: 0,
       createdAt: new Date().toISOString(),
+      plan: "free",
+      whatsapp: defaultWhatsApp(),
+      reminder: defaultReminder(),
     },
     applications: [],
     days: {},
     xp: 0,
     badges: [],
+    badgeUnlocks: {},
     publicId: newPublicId(),
     published: false,
   };
@@ -250,6 +331,9 @@ function revive(raw: unknown): TrackerState {
   const o = raw as Partial<TrackerState>;
   const trackRaw = o.profile?.track;
   const track: Track = trackRaw === "fresh" || trackRaw === "experienced" ? trackRaw : "";
+  const plan: Plan = o.profile?.plan === "paid" ? "paid" : "free";
+  let whatsapp = reviveWhatsApp(o.profile?.whatsapp);
+  if (plan !== "paid") whatsapp = { ...whatsapp, enabled: false };
   let profile: Profile = {
     nickname: String(o.profile?.nickname ?? ""),
     track,
@@ -259,6 +343,9 @@ function revive(raw: unknown): TrackerState {
     dailySkillMinutes: Number(o.profile?.dailySkillMinutes) || 0,
     dailyOutreach: Number(o.profile?.dailyOutreach) || 0,
     createdAt: o.profile?.createdAt || base.profile.createdAt,
+    plan,
+    whatsapp,
+    reminder: reviveReminder(o.profile?.reminder),
   };
   if (track && (profile.dailyMinutes <= 0 || profile.dailyApps <= 0)) {
     const preset = TRACKS[track];
@@ -287,6 +374,7 @@ function revive(raw: unknown): TrackerState {
     days,
     xp: 0,
     badges,
+    badgeUnlocks: reviveUnlocks(o.badgeUnlocks),
     publicId,
     published: Boolean(o.published),
   });
@@ -309,11 +397,15 @@ function migrateV1(raw: unknown): TrackerState {
       dailySkillMinutes: 0,
       dailyOutreach: 0,
       createdAt: o.profile?.createdAt || base.profile.createdAt,
+      plan: "free",
+      whatsapp: defaultWhatsApp(),
+      reminder: defaultReminder(),
     },
     applications,
     days: {},
     xp: 0,
     badges: [],
+    badgeUnlocks: {},
     publicId: newPublicId(),
     published: false,
   });
@@ -466,15 +558,37 @@ export function computeBadges(state: TrackerState): string[] {
   if (hasWeekHit(state)) next.add("week-hit");
   if (hasWeek7Checkins(state)) next.add("week-7-checkins");
   if (hasSkillWeek(state)) next.add("skill-week");
+  const daily = computeDailyStreak(state);
+  if (daily >= 7) next.add("daily-7");
+  if (daily >= 30) next.add("daily-30");
   return [...next];
 }
 
+function stampUnlocks(prev: Record<string, string> | undefined, badges: string[]): Record<string, string> {
+  const next = { ...(prev ?? {}) };
+  const now = new Date().toISOString();
+  for (const id of badges) {
+    if (!next[id]) next[id] = now;
+  }
+  return next;
+}
+
 function finalize(state: TrackerState): TrackerState {
+  const badges = computeBadges(state);
   return {
     ...state,
     xp: computeXp(state),
-    badges: computeBadges(state),
+    badges,
+    badgeUnlocks: stampUnlocks(state.badgeUnlocks, badges),
   };
+}
+
+export function recentUnlocks(state: TrackerState, n = 4): { id: string; at: string }[] {
+  return Object.entries(state.badgeUnlocks ?? {})
+    .filter(([id]) => state.badges.includes(id))
+    .sort((a, b) => (a[1] < b[1] ? 1 : -1))
+    .slice(0, n)
+    .map(([id, at]) => ({ id, at }));
 }
 
 export const localStore: TrackerStore = {
@@ -631,9 +745,45 @@ export function setPublished(state: TrackerState, published: boolean): TrackerSt
   return { ...state, published };
 }
 
+export function setPlan(state: TrackerState, plan: Plan): TrackerState {
+  const whatsapp =
+    plan === "paid" ? state.profile.whatsapp : { ...state.profile.whatsapp, enabled: false };
+  return { ...state, profile: { ...state.profile, plan, whatsapp } };
+}
+
+export function setWhatsApp(state: TrackerState, patch: Partial<WhatsAppPrefs>): TrackerState {
+  const next = { ...state.profile.whatsapp, ...patch };
+  if (state.profile.plan !== "paid") next.enabled = false;
+  return { ...state, profile: { ...state.profile, whatsapp: next } };
+}
+
+export function setReminder(state: TrackerState, patch: Partial<ReminderPrefs>): TrackerState {
+  const next = { ...state.profile.reminder, ...patch };
+  if (typeof patch.time === "string") {
+    const m = /^(\d{1,2}):(\d{2})/.exec(patch.time.trim());
+    next.time = m
+      ? `${String(Math.min(23, Math.max(0, Number(m[1])))).padStart(2, "0")}:${String(Math.min(59, Math.max(0, Number(m[2])))).padStart(2, "0")}`
+      : state.profile.reminder.time;
+  }
+  if (typeof patch.timezone === "string" && !patch.timezone.trim()) {
+    next.timezone = "Asia/Calcutta";
+  }
+  return { ...state, profile: { ...state.profile, reminder: next } };
+}
+
+export function markReminderFired(state: TrackerState, date: string): TrackerState {
+  return {
+    ...state,
+    profile: {
+      ...state.profile,
+      reminder: { ...state.profile.reminder, lastFired: date },
+    },
+  };
+}
+
 export function markShared(state: TrackerState): TrackerState {
   if (state.badges.includes("shared")) return state;
-  return { ...state, badges: [...state.badges, "shared"] };
+  return finalize({ ...state, badges: [...state.badges, "shared"] });
 }
 
 export function activityScore(state: TrackerState, date: string): number {

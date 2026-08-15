@@ -4,7 +4,7 @@ import { activityScore, type TrackerState } from "@/lib/tracker";
 import { itemRise, staggerFast } from "@/lib/motion";
 
 function tone(score: number): string {
-  if (score <= 0) return "bg-white/5";
+  if (score <= 0) return "bg-foreground/10";
   if (score < 30) return "bg-primary/25";
   if (score < 90) return "bg-primary/50";
   if (score < 180) return "bg-primary/75";
@@ -16,9 +16,9 @@ export function Heatmap({ state }: { state: TrackerState }) {
   const days = lastNDays(30);
   return (
     <div>
-      <div className="micro mb-3">30-day heat</div>
+      <div className="micro mb-4">30-day heat</div>
       <motion.div
-        className="grid grid-cols-10 gap-1.5"
+        className="grid grid-cols-10 gap-2"
         initial={reduce ? "show" : "hidden"}
         animate="show"
         variants={staggerFast}

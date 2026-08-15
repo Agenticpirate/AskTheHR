@@ -54,7 +54,7 @@ export function ProgressRing({
           cy={center}
           r={r}
           fill="none"
-          stroke="#3a3a3f"
+          stroke="var(--border)"
           strokeWidth={compact ? 5 : 7}
         />
         <circle
@@ -63,7 +63,7 @@ export function ProgressRing({
           cy={center}
           r={r}
           fill="none"
-          stroke={hit ? "#0070f3" : "#ffffff"}
+          stroke={hit ? "var(--primary)" : "var(--ink)"}
           strokeWidth={compact ? 5 : 7}
           strokeLinecap="round"
           strokeDasharray={c}

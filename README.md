@@ -17,7 +17,9 @@ Coverage is ten countries: USA, India, Canada, UK, Australia, Germany, Netherlan
 | `/` | Home, KPI cards, featured remote roles, country chips |
 | `/jobs` | Search and filters |
 | `/jobs/:id` | Role detail and apply |
-| `/me` | Weekly target, streak, application log |
+| `/me` | Weekly target, application log, reminders |
+| `/streak` | Achievements dashboard, badges, XP, reminders |
+| `/board` | Public opt-in leaderboard |
 | `/countries` | Ten markets |
 | `/countries/:slug` | Country slice |
 

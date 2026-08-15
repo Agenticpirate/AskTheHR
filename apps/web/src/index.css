@@ -55,12 +55,52 @@
     --radius-4xl: 16px;
 }
 
-/* SpaceX night + Apple ink + Vercel blue. Light tokens unused. */
-:root,
+/* Light: Apple parchment + Vercel ink/blue. Dark: SpaceX night. */
+:root {
+    color-scheme: light;
+    --background: #f5f5f7;
+    --foreground: #171717;
+    --ink: #171717;
+    --mute: #888888;
+    --card: #ffffff;
+    --card-foreground: #171717;
+    --popover: #ffffff;
+    --popover-foreground: #171717;
+    --primary: #0070f3;
+    --primary-foreground: #ffffff;
+    --secondary: #f5f5f7;
+    --secondary-foreground: #171717;
+    --muted: #f5f5f5;
+    --muted-foreground: #4d4d4d;
+    --accent: #f5f5f5;
+    --accent-foreground: #171717;
+    --destructive: #ee0000;
+    --border: #ebebeb;
+    --input: #ebebeb;
+    --ring: #0070f3;
+    --chart-1: #0070f3;
+    --chart-2: #171717;
+    --chart-3: #888888;
+    --chart-4: #a1a1a1;
+    --chart-5: #ebebeb;
+    --radius: 0.5rem;
+    --sidebar: #ffffff;
+    --sidebar-foreground: #171717;
+    --sidebar-primary: #0070f3;
+    --sidebar-primary-foreground: #ffffff;
+    --sidebar-accent: #f5f5f7;
+    --sidebar-accent-foreground: #171717;
+    --sidebar-border: #ebebeb;
+    --sidebar-ring: #0070f3;
+    --good: #0070f3;
+    --good-foreground: #ffffff;
+    --grid-line: #ebebeb;
+}
+
 .dark {
     color-scheme: dark;
     --background: #000000;
-    --foreground: #f5f5f7;
+    --foreground: #ffffff;
     --ink: #ffffff;
     --mute: #888888;
     --card: #0a0a0a;
@@ -84,7 +124,6 @@
     --chart-3: #888888;
     --chart-4: #7a7a7a;
     --chart-5: #3a3a3f;
-    --radius: 0.5rem;
     --sidebar: #000000;
     --sidebar-foreground: #f5f5f7;
     --sidebar-primary: #0070f3;
@@ -95,6 +134,7 @@
     --sidebar-ring: #0070f3;
     --good: #0070f3;
     --good-foreground: #ffffff;
+    --grid-line: #3a3a3f;
 }
 
 @layer base {
@@ -112,7 +152,7 @@
   html, body, #root {
     min-height: 100%;
   }
-  h1, h2, h3, .font-heading {
+  h1, h2, h3, .font-heading, .font-display {
     letter-spacing: -0.04em;
   }
 }
@@ -123,6 +163,7 @@
 }
 
 .micro {
+  font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.16em;
@@ -141,17 +182,16 @@
   --spot-x: 50%;
   --spot-y: 28%;
   background-image:
-    radial-gradient(520px circle at var(--spot-x) var(--spot-y), color-mix(in srgb, var(--primary) 18%, transparent), transparent 58%),
-    linear-gradient(to right, #3a3a3f 1px, transparent 1px),
-    linear-gradient(to bottom, #3a3a3f 1px, transparent 1px);
+    radial-gradient(520px circle at var(--spot-x) var(--spot-y), color-mix(in srgb, var(--primary) 16%, transparent), transparent 58%),
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
   background-size: auto, 56px 56px, 56px 56px;
   mask-image: radial-gradient(ellipse 80% 70% at 50% 35%, #000 18%, transparent 78%);
 }
 
-
 .cta-glow {
   position: relative;
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--foreground) 8%, transparent);
 }
 .cta-glow::after {
   content: "";
@@ -159,8 +199,8 @@
   inset: -1px;
   border-radius: inherit;
   pointer-events: none;
-  background: conic-gradient(from var(--cta-angle, 0deg), transparent 55%, #0070f3 78%, #ffffff 88%, transparent 100%);
-  opacity: 0.55;
+  background: conic-gradient(from var(--cta-angle, 0deg), transparent 55%, #0070f3 78%, var(--foreground) 88%, transparent 100%);
+  opacity: 0.45;
   mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   mask-composite: exclude;
   padding: 1px;

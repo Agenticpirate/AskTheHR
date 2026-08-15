@@ -10,7 +10,9 @@ August 2026 openings across USA, India, Canada, UK, Australia, Germany, Netherla
 - `/` Home: KPI cards, country chips, featured remote roles
 - `/jobs` Board: search, country, city, remote vs on-site, pagination
 - `/jobs/:id` Detail: external apply and I applied
-- `/me` Accountability: nickname, weekly target, streak, application log
+- `/me` Accountability: nickname, weekly target, application log, reminders
+- `/streak` Achievements: daily/weekly streak, badges, XP, heatmap, share, reminders
+- `/board` Public opt-in leaderboard
 - `/countries` Ten markets
 - `/countries/:slug` Country slice
 
@@ -56,3 +58,17 @@ src/lib/tracker.ts uses a TrackerStore. MVP is localStorage (seeker.tracker.v1).
 Swap the store for a Cloudflare KV or D1 worker later. The React hook does not care.
 
 Product name is 0pening. AskTheHR is the brand behind it.
+
+## Reminders
+
+Browser notifications are free. A client scheduler fires once per day while the tab is open (default 09:00 Asia/Calcutta).
+
+After the tab is closed, Web Push via Cloudflare is the free unlimited path.
+
+## Theme
+
+Header sun/moon cycles light, dark, then system. Persisted as localStorage 0pening.theme. The dark class is applied on html.
+
+## Paid messaging
+
+WhatsApp reminders require profile.plan = paid. POST /api/remind rejects free plans, never sends when enabled is false, and returns 501 whatsapp_not_configured when Cloud API env is missing. Free users keep browser reminders. Messaging turns off when the plan ends.

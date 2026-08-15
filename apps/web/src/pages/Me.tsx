@@ -1,9 +1,8 @@
 import { FormEvent, useState } from "react";
 import { Link } from "react-router-dom";
-import { Heatmap } from "@/components/Heatmap";
 import { PageEnter, Section } from "@/components/PageEnter";
 import { PipelineTable } from "@/components/PipelineTable";
-import { ShareCard } from "@/components/ShareCard";
+import { ReminderSettings } from "@/components/ReminderSettings";
 import { TodayRings } from "@/components/TodayRings";
 import { TrackChooser } from "@/components/TrackChooser";
 import { XpBar } from "@/components/XpBar";
@@ -12,7 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { formatMissionDate, formatWeekLabel, weekKey } from "@/lib/dates";
 import { publishEntry, unpublishEntry } from "@/lib/leaderboard";
-import { BADGE_META, TRACKS, type RingId } from "@/lib/tracker";
+import { TRACKS, type RingId } from "@/lib/tracker";
 import { useTracker } from "@/lib/useTracker";
 
 export function Me() {
@@ -76,27 +75,30 @@ export function Me() {
 
   return (
     <PageEnter>
-      <Section className="mb-10">
+      <Section className="mb-12">
         <div className="micro text-primary">{formatMissionDate()}</div>
-        <div className="mt-3 flex flex-wrap items-end justify-between gap-6">
+        <div className="mt-4 flex flex-wrap items-end justify-between gap-8">
           <div>
-            <h1 className="text-4xl tracking-tight md:text-5xl">
+            <h1 className="text-5xl tracking-tight md:text-6xl">
               {tracker.nickname ? tracker.nickname : "Command"}
             </h1>
-            <p className="mt-2 text-sm text-muted-foreground">
-              {TRACKS[tracker.track].label} · daily streak {tracker.dailyStreak} · week {tracker.thisWeek}/
+            <p className="mt-3 text-base text-muted-foreground">
+              {TRACKS[tracker.track].label} · daily {tracker.dailyStreak} · week {tracker.thisWeek}/
               {tracker.target}
             </p>
           </div>
-          <div className="w-full max-w-xs">
+          <div className="w-full max-w-sm">
             <XpBar xp={tracker.xp} level={tracker.level} />
+            <Button variant="ghost" size="sm" asChild className="mt-3 px-0">
+              <Link to="/streak">Open streak dashboard →</Link>
+            </Button>
           </div>
         </div>
       </Section>
 
-      <Section delay={0.06} className="mb-8">
+      <Section delay={0.06} className="mb-12">
         <TodayRings rings={tracker.rings} onAdjust={onAdjust} />
-        <div className="mt-4 flex flex-wrap items-center gap-3">
+        <div className="mt-6 flex flex-wrap items-center gap-4">
           <Button
             type="button"
             disabled={tracker.today.checkedIn}
@@ -116,14 +118,16 @@ export function Me() {
         </div>
       </Section>
 
-      <Section delay={0.1} className="mb-8">
+      <Section delay={0.1} className="mb-12">
         <Card>
           <CardHeader>
             <div className="micro text-primary">This week</div>
-            <CardTitle className="text-2xl">{formatWeekLabel(weekKey(new Date()))}</CardTitle>
+            <CardTitle className="text-2xl tracking-tight">
+              {formatWeekLabel(weekKey(new Date()))}
+            </CardTitle>
           </CardHeader>
-          <CardContent className="grid gap-3">
-            <div className="h-1.5 overflow-hidden rounded-full bg-white/10">
+          <CardContent className="grid gap-4">
+            <div className="h-1.5 overflow-hidden rounded-full bg-foreground/10">
               <div
                 className="h-full bg-primary"
                 style={{
@@ -141,15 +145,11 @@ export function Me() {
         </Card>
       </Section>
 
-      <Section delay={0.14} className="mb-8">
-        <Heatmap state={tracker.state} />
-      </Section>
-
-      <Section delay={0.18} className="mb-8">
-        <div className="mb-3 flex items-end justify-between">
+      <Section delay={0.14} className="mb-12">
+        <div className="mb-5 flex items-end justify-between">
           <div>
             <div className="micro">Pipeline</div>
-            <h2 className="text-2xl tracking-tight">Applications</h2>
+            <h2 className="text-3xl tracking-tight">Applications</h2>
           </div>
           <Button variant="outline" size="sm" asChild>
             <Link to="/jobs?work=remote">Find a role</Link>
@@ -160,18 +160,18 @@ export function Me() {
           onStatus={tracker.setStatus}
           onRemove={tracker.remove}
         />
-        <p className="mt-3 text-xs text-muted-foreground">
+        <p className="mt-4 text-xs text-muted-foreground">
           {tracker.state.applications.length} total
         </p>
       </Section>
 
-      <Section delay={0.22} className="mb-8 grid gap-4 lg:grid-cols-2">
+      <Section delay={0.18} className="mb-12 grid gap-6 lg:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Log an application</CardTitle>
+            <CardTitle className="text-2xl tracking-tight">Log an application</CardTitle>
           </CardHeader>
           <CardContent>
-            <form onSubmit={onManual} className="grid gap-3">
+            <form onSubmit={onManual} className="grid gap-4">
               <label className="grid gap-1.5">
                 <span className="micro">Role</span>
                 <Input
@@ -204,9 +204,9 @@ export function Me() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Setup</CardTitle>
+            <CardTitle className="text-2xl tracking-tight">Setup</CardTitle>
           </CardHeader>
-          <CardContent className="grid gap-3">
+          <CardContent className="grid gap-4">
             <label className="grid gap-1.5">
               <span className="micro">Nickname</span>
               <Input
@@ -256,32 +256,9 @@ export function Me() {
         </Card>
       </Section>
 
-      <Section delay={0.26} className="mb-8">
-        <div className="micro mb-3">Share</div>
-        <ShareCard
-          state={tracker.state}
-          text={tracker.shareText}
-          dailyStreak={tracker.dailyStreak}
-          onCopied={tracker.markShared}
-        />
+      <Section delay={0.22}>
+        <ReminderSettings />
       </Section>
-
-      {tracker.badges.length > 0 ? (
-        <Section delay={0.3}>
-          <div className="micro mb-3">Badges</div>
-          <div className="flex flex-wrap gap-2">
-            {tracker.badges.map((id) => (
-              <span
-                key={id}
-                className="rounded-full px-3 py-1 text-xs ring-1 ring-border"
-                title={BADGE_META[id]?.hint}
-              >
-                {BADGE_META[id]?.label ?? id}
-              </span>
-            ))}
-          </div>
-        </Section>
-      ) : null}
     </PageEnter>
   );
 }

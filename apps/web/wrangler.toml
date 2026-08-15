@@ -6,3 +6,6 @@ pages_build_output_dir = "dist"
 # (Settings → Functions → KV namespace bindings). The function falls
 # back to in-memory storage if the binding is missing — never 500s,
 # never invents users.
+
+# Optional Cloud API env for /api/remind: WHATSAPP_TOKEN, PHONE_ID
+# Missing either returns 501 whatsapp_not_configured.

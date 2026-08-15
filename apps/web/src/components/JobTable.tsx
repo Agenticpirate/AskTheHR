@@ -36,11 +36,11 @@ export function JobTable({
       <Table>
         <TableHeader>
           <TableRow className="hover:bg-transparent">
-            <TableHead className="pl-4">Role</TableHead>
+            <TableHead>Role</TableHead>
             <TableHead>Company</TableHead>
             <TableHead>Location</TableHead>
             <TableHead>Type</TableHead>
-            <TableHead className="pr-4">Posted</TableHead>
+            <TableHead>Posted</TableHead>
           </TableRow>
         </TableHeader>
         <motion.tbody initial={reduce ? "show" : "hidden"} animate="show" variants={staggerFast}>
@@ -48,10 +48,10 @@ export function JobTable({
             <motion.tr
               key={job.id}
               variants={itemRise}
-              className="cursor-pointer border-b hover:bg-white/[0.03]"
+              className="cursor-pointer border-b hover:bg-muted/50"
               onClick={() => navigate(jobPath(job))}
             >
-              <TableCell className="max-w-[280px] pl-4 whitespace-normal">
+              <TableCell className="max-w-[280px] whitespace-normal">
                 <div className="font-medium leading-snug">{job.title}</div>
                 <div className="text-[11px] text-muted-foreground">{job.source}</div>
               </TableCell>
@@ -69,7 +69,7 @@ export function JobTable({
                   {job.remote ? "Remote" : "On-site"}
                 </Badge>
               </TableCell>
-              <TableCell className="pr-4 text-muted-foreground">
+              <TableCell className="text-muted-foreground">
                 {formatPosted(job.posted_at)}
               </TableCell>
             </motion.tr>

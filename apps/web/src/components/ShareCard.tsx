@@ -35,37 +35,28 @@ export function ShareCard({
   };
 
   return (
-    <div className="grid gap-4">
-      <motion.div
-        key={pop}
-        animate={reduce || pop === 0 ? undefined : { scale: [1, 1.035, 1] }}
-        transition={{ type: "spring", stiffness: 420, damping: 16 }}
-        className="rounded-lg bg-card px-6 py-8 ring-1 ring-border"
-      >
-        <div className="micro text-primary">0pening</div>
-        <div className="mt-3 font-heading text-3xl tracking-tight">
-          Day {dayNumber(state)}
+    <motion.div
+      key={pop}
+      animate={reduce || pop === 0 ? undefined : { scale: [1, 1.02, 1] }}
+      transition={{ type: "spring", stiffness: 420, damping: 16 }}
+      className="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-card px-4 py-3 ring-1 ring-border"
+    >
+      <div className="min-w-0">
+        <div className="micro text-primary">Cadence</div>
+        <div className="mt-1 text-sm tracking-tight">
+          Day {dayNumber(state)} · {track}
         </div>
-        <div className="mt-1 text-sm text-muted-foreground">{track}</div>
-        <div className="mt-6 grid grid-cols-3 gap-3 font-mono text-sm tabular-nums">
-          <div>
-            <CountUp value={dailyStreak} className="text-xl" />
-            <div className="micro mt-1">Streak</div>
-          </div>
-          <div>
-            <div className="text-xl">{formatLoggedTime(todayMins)}</div>
-            <div className="micro mt-1">Time</div>
-          </div>
-          <div>
-            <div className="text-xl">{state.xp}</div>
-            <div className="micro mt-1">XP</div>
-          </div>
+        <div className="mt-1 flex flex-wrap gap-x-3 font-mono text-[11px] tabular-nums text-muted-foreground">
+          <span>
+            <CountUp value={dailyStreak} /> streak
+          </span>
+          <span>{formatLoggedTime(todayMins)}</span>
+          <span>{state.xp} XP</span>
         </div>
-        <p className="mt-6 font-mono text-xs leading-relaxed text-muted-foreground">{text}</p>
-      </motion.div>
-      <Button type="button" onClick={() => void copy()}>
+      </div>
+      <Button type="button" size="sm" onClick={() => void copy()}>
         {copied ? "Copied" : "Copy progress"}
       </Button>
-    </div>
+    </motion.div>
   );
 }

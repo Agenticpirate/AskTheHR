@@ -7,116 +7,158 @@ import { ReminderSettings } from "@/components/ReminderSettings";
 import { ShareCard } from "@/components/ShareCard";
 import { XpBar } from "@/components/XpBar";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { formatShortDate } from "@/lib/dates";
 import { BADGE_META, BADGE_ORDER } from "@/lib/tracker";
 import { useTracker } from "@/lib/useTracker";
 
+function Kpi({
+  label,
+  value,
+  hint,
+}: {
+  label: string;
+  value: number;
+  hint: string;
+}) {
+  return (
+    <div className="rounded-lg bg-card px-4 py-3 ring-1 ring-border">
+      <div className="micro">{label}</div>
+      <div className="mt-1.5 font-display text-3xl leading-none tracking-tight md:text-4xl">
+        <CountUp value={value} />
+      </div>
+      <p className="mt-1.5 text-xs text-muted-foreground">{hint}</p>
+    </div>
+  );
+}
+
 export function Streak() {
   const tracker = useTracker();
+  const remaining = Math.max(0, tracker.target - tracker.thisWeek);
 
   return (
     <PageEnter>
-      <Section className="mb-12">
-        <div className="micro text-primary">Achievements</div>
-        <h1 className="mt-3 text-5xl tracking-tight md:text-6xl">Streak.</h1>
-        <p className="mt-4 max-w-xl text-base leading-relaxed text-muted-foreground md:text-lg">
-          Daily and weekly discipline, badges, and XP. Browser reminders are free. WhatsApp is
-          paid-only.
-        </p>
-        <div className="mt-6">
+      <Section className="mb-5">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <div className="micro text-primary">Cadence</div>
+            <h1 className="mt-1 text-2xl tracking-tight md:text-3xl">Discipline</h1>
+          </div>
           <CheckInButton checkedIn={tracker.today.checkedIn} onCheckIn={() => tracker.checkIn()} />
         </div>
       </Section>
 
-      <Section delay={0.06} className="mb-12">
-        <div className="grid gap-4 md:grid-cols-2">
-          <Card className="px-2 py-4 md:px-4 md:py-6">
-            <CardContent>
-              <div className="micro text-primary">Daily streak</div>
-              <div className="mt-4 font-display text-6xl leading-none tracking-tight md:text-7xl">
-                <CountUp value={tracker.dailyStreak} />
-              </div>
-              <p className="mt-3 text-sm text-muted-foreground">
-                {tracker.dailyStreak === 1 ? "Day of activity" : "Consecutive active days"}
-              </p>
-            </CardContent>
-          </Card>
-          <Card className="px-2 py-4 md:px-4 md:py-6">
-            <CardContent>
-              <div className="micro text-primary">Weekly streak</div>
-              <div className="mt-4 font-display text-6xl leading-none tracking-tight md:text-7xl">
-                <CountUp value={tracker.streak} />
-              </div>
-              <p className="mt-3 text-sm text-muted-foreground">
-                Weeks hitting {tracker.target} applications
-              </p>
-            </CardContent>
-          </Card>
+      <Section delay={0.04} className="mb-5">
+        <div className="flex items-center justify-between gap-4 rounded-lg bg-foreground px-4 py-3 text-background">
+          <div>
+            <div className="font-mono text-[11px] font-medium uppercase tracking-[0.16em] opacity-50">
+              Today
+            </div>
+            <div className="mt-1 text-lg tracking-tight">
+              {tracker.today.checkedIn ? "Checked in" : "Not checked in"}
+            </div>
+          </div>
+          <p className="max-w-[14rem] text-right text-xs leading-relaxed opacity-60">
+            {tracker.today.checkedIn
+              ? "On the board. Keep the chain."
+              : "One tap starts today."}
+          </p>
         </div>
       </Section>
 
-      <Section delay={0.1} className="mb-12">
-        <div className="mb-4">
-          <div className="micro">Level</div>
-          <h2 className="mt-1 text-3xl tracking-tight">{tracker.level.name}</h2>
-        </div>
-        <XpBar xp={tracker.xp} level={tracker.level} />
+      <Section delay={0.08} className="mb-5">
+        <Stagger className="grid grid-cols-2 gap-2 lg:grid-cols-4" fast>
+          <StaggerItem>
+            <Kpi
+              label="Daily streak"
+              value={tracker.dailyStreak}
+              hint={tracker.dailyStreak === 1 ? "Day of activity" : "Consecutive active days"}
+            />
+          </StaggerItem>
+          <StaggerItem>
+            <Kpi
+              label="Weekly streak"
+              value={tracker.streak}
+              hint={`Weeks hitting ${tracker.target} apps`}
+            />
+          </StaggerItem>
+          <StaggerItem>
+            <div className="rounded-lg bg-card px-4 py-3 ring-1 ring-border">
+              <div className="micro">XP / level</div>
+              <div className="mt-1.5 font-display text-3xl leading-none tracking-tight md:text-4xl">
+                <CountUp value={tracker.xp} />
+              </div>
+              <div className="mt-2">
+                <XpBar xp={tracker.xp} level={tracker.level} />
+              </div>
+            </div>
+          </StaggerItem>
+          <StaggerItem>
+            <Kpi
+              label="Apps this week"
+              value={tracker.thisWeek}
+              hint={
+                tracker.thisWeek >= tracker.target
+                  ? `of ${tracker.target} · target hit`
+                  : `of ${tracker.target} · ${remaining} left`
+              }
+            />
+          </StaggerItem>
+        </Stagger>
       </Section>
 
-      <Section delay={0.14} className="mb-12">
-        <div className="mb-5">
+      <Section delay={0.12} className="mb-5">
+        <div className="rounded-lg bg-card px-4 py-3 ring-1 ring-border">
+          <Heatmap state={tracker.state} />
+        </div>
+      </Section>
+
+      <Section delay={0.16} className="mb-5">
+        <div className="mb-2 flex items-baseline justify-between gap-3">
           <div className="micro">Badges</div>
-          <h2 className="mt-1 text-3xl tracking-tight">Earned and upcoming.</h2>
+          <div className="font-mono text-[11px] tabular-nums text-muted-foreground">
+            {tracker.badges.length}/{BADGE_ORDER.length}
+          </div>
         </div>
-        <Stagger className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4" fast>
+        <Stagger className="flex flex-wrap gap-1.5" fast>
           {BADGE_ORDER.map((id) => {
             const unlocked = tracker.badges.includes(id);
             const meta = BADGE_META[id];
             return (
               <StaggerItem key={id}>
-                <div
-                  className={`rounded-lg px-5 py-6 ring-1 ring-border ${
-                    unlocked ? "bg-card" : "bg-muted/40"
+                <span
+                  title={meta?.hint}
+                  className={`inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs ring-1 ${
+                    unlocked
+                      ? "bg-card text-foreground ring-border"
+                      : "bg-muted/40 text-muted-foreground ring-border/70"
                   }`}
                 >
-                  <div className="micro text-primary">{unlocked ? "Unlocked" : "Locked"}</div>
-                  <div className={`mt-3 text-lg tracking-tight ${unlocked ? "" : "text-muted-foreground"}`}>
-                    {meta?.label ?? id}
-                  </div>
-                  <p className="mt-1 text-sm text-muted-foreground">{meta?.hint}</p>
-                </div>
+                  <span
+                    className={`size-1.5 rounded-full ${unlocked ? "bg-primary" : "bg-foreground/20"}`}
+                  />
+                  {meta?.label ?? id}
+                </span>
               </StaggerItem>
             );
           })}
         </Stagger>
       </Section>
 
-      <Section delay={0.18} className="mb-12">
-        <div className="mb-5">
-          <div className="micro">Recent</div>
-          <h2 className="mt-1 text-3xl tracking-tight">Unlocks.</h2>
-        </div>
+      <Section delay={0.2} className="mb-5">
+        <div className="micro mb-2">Unlocks</div>
         {tracker.unlocks.length === 0 ? (
-          <div className="rounded-lg px-6 py-12 text-sm text-muted-foreground ring-1 ring-border">
-            Nothing unlocked yet. Log an application or check in on Me.
-            <div className="mt-4">
-              <Button asChild>
-                <Link to="/me">Open Me</Link>
-              </Button>
-            </div>
+          <div className="flex items-center justify-between gap-3 rounded-lg px-4 py-3 text-sm text-muted-foreground ring-1 ring-border">
+            <span>Nothing unlocked yet.</span>
+            <Button variant="ghost" size="sm" asChild className="h-7 px-2">
+              <Link to="/me">Open Me</Link>
+            </Button>
           </div>
         ) : (
-          <ul className="grid gap-3">
+          <ul className="divide-y divide-border rounded-lg ring-1 ring-border">
             {tracker.unlocks.map((row) => (
-              <li
-                key={row.id}
-                className="flex items-baseline justify-between gap-4 rounded-lg px-5 py-4 ring-1 ring-border"
-              >
-                <span className="text-base tracking-tight">
-                  {BADGE_META[row.id]?.label ?? row.id}
-                </span>
-                <span className="font-mono text-xs text-muted-foreground">
+              <li key={row.id} className="flex items-center justify-between gap-4 px-4 py-2">
+                <span className="text-sm tracking-tight">{BADGE_META[row.id]?.label ?? row.id}</span>
+                <span className="font-mono text-[11px] text-muted-foreground">
                   {formatShortDate(row.at)}
                 </span>
               </li>
@@ -125,12 +167,7 @@ export function Streak() {
         )}
       </Section>
 
-      <Section delay={0.22} className="mb-12">
-        <Heatmap state={tracker.state} />
-      </Section>
-
-      <Section delay={0.26} className="mb-12">
-        <div className="micro mb-4">Share</div>
+      <Section delay={0.24} className="mb-5">
         <ShareCard
           state={tracker.state}
           text={tracker.shareText}
@@ -139,7 +176,7 @@ export function Streak() {
         />
       </Section>
 
-      <Section delay={0.3}>
+      <Section delay={0.28}>
         <ReminderSettings />
       </Section>
     </PageEnter>

@@ -16,9 +16,10 @@ export function Heatmap({ state }: { state: TrackerState }) {
   const days = lastNDays(30);
   return (
     <div>
-      <div className="micro mb-4">30-day heat</div>
+      <div className="micro mb-2">30-day heat</div>
       <motion.div
-        className="grid grid-cols-10 gap-2"
+        className="grid gap-1"
+        style={{ gridTemplateColumns: "repeat(15, minmax(0, 1fr))" }}
         initial={reduce ? "show" : "hidden"}
         animate="show"
         variants={staggerFast}
@@ -30,7 +31,7 @@ export function Heatmap({ state }: { state: TrackerState }) {
               key={key}
               title={`${key} · ${score}`}
               variants={itemRise}
-              className={`aspect-square rounded-[3px] ${tone(score)}`}
+              className={`aspect-square rounded-[2px] ${tone(score)}`}
             />
           );
         })}

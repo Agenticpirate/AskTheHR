@@ -38,7 +38,7 @@ const nav = [
   { to: "/jobs", label: "Jobs", icon: Briefcase, end: false },
   { to: "/countries", label: "Countries", icon: Globe2, end: false },
   { to: "/me", label: "Me", icon: Target, end: false },
-  { to: "/streak", label: "Streak", icon: Flame, end: false },
+  { to: "/streak", label: "Cadence", icon: Flame, end: false },
   { to: "/board", label: "Board", icon: Trophy, end: false },
 ];
 
@@ -49,7 +49,7 @@ function pageMeta(pathname: string): { title: string; kicker: string } {
   if (pathname === "/jobs") return { title: "Jobs", kicker: "Board" };
   if (pathname.startsWith("/jobs/")) return { title: "Role", kicker: "Jobs" };
   if (pathname === "/me") return { title: "Me", kicker: "Command" };
-  if (pathname === "/streak") return { title: "Streak", kicker: "Achievements" };
+  if (pathname === "/streak") return { title: "Cadence", kicker: "Discipline" };
   if (pathname === "/board") return { title: "Board", kicker: "Public" };
   if (pathname === "/countries") return { title: "Countries", kicker: "Markets" };
   if (pathname.startsWith("/countries/")) return { title: "Market", kicker: "Countries" };
@@ -224,7 +224,7 @@ export function Layout() {
                     ? `@${tracker.profile.username}`
                     : tracker.nickname
                       ? tracker.nickname
-                      : "Streak"}
+                      : "Cadence"}
                 </span>
                 <span className="font-mono tabular-nums font-medium">{tracker.dailyStreak}</span>
               </NavLink>
@@ -236,7 +236,13 @@ export function Layout() {
           {fullBleed ? (
             <Outlet />
           ) : (
-            <div className="mx-auto w-full max-w-[1120px] px-5 py-10 md:px-12 md:py-16">
+            <div
+              className={
+                loc.pathname === "/streak"
+                  ? "mx-auto w-full max-w-[1120px] px-5 py-6 md:px-12 md:py-8"
+                  : "mx-auto w-full max-w-[1120px] px-5 py-10 md:px-12 md:py-16"
+              }
+            >
               <Outlet />
             </div>
           )}

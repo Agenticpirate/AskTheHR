@@ -1,7 +1,6 @@
 import { Lock } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { requestWhatsAppRemind } from "@/lib/reminders";
 import { useTracker } from "@/lib/useTracker";
@@ -41,120 +40,107 @@ export function ReminderSettings() {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="micro text-primary">Reminders</div>
-        <CardTitle className="text-2xl tracking-tight">Stay on the clock.</CardTitle>
-      </CardHeader>
-      <CardContent className="grid gap-6">
-        <div className="grid gap-3">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <div className="text-sm font-medium">Browser reminder</div>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Free. Fires once a day while this tab is open. Default 09:00 Asia/Calcutta.
-              </p>
-            </div>
-            <Button
-              type="button"
-              variant={tracker.reminder.enabled ? "outline" : "default"}
-              onClick={() => void toggleBrowser()}
-            >
-              {tracker.reminder.enabled ? "On" : "Enable"}
-            </Button>
-          </div>
-          <label className="grid max-w-[220px] gap-1.5">
-            <span className="micro">Daily time</span>
-            <Input
-              type="time"
-              value={tracker.reminder.time}
-              onChange={(e) => tracker.setReminder({ time: e.target.value })}
-            />
-          </label>
-          <p className="text-xs text-muted-foreground">
-            Timezone {tracker.reminder.timezone}.
+    <div className="rounded-lg bg-card ring-1 ring-border">
+      <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3">
+        <div className="min-w-0">
+          <div className="micro text-primary">Reminders</div>
+          <div className="mt-1 text-sm tracking-tight">Browser · free daily ping</div>
+          <p className="mt-0.5 text-xs text-muted-foreground">
+            {tracker.reminder.timezone}
             {perm === "denied"
-              ? " Notifications are blocked in this browser."
+              ? " · notifications blocked"
               : perm === "unsupported"
-                ? " This browser has no Notification API."
-                : ""}{" "}
-            After you close the tab, Web Push via Cloudflare is the free unlimited path — no Meta
-            fees.
+                ? " · no Notification API"
+                : ""}
           </p>
         </div>
+        <div className="flex items-center gap-2">
+          <Input
+            type="time"
+            value={tracker.reminder.time}
+            onChange={(e) => tracker.setReminder({ time: e.target.value })}
+            className="h-8 w-[7.5rem]"
+            aria-label="Daily reminder time"
+          />
+          <Button
+            type="button"
+            size="sm"
+            variant={tracker.reminder.enabled ? "outline" : "default"}
+            onClick={() => void toggleBrowser()}
+          >
+            {tracker.reminder.enabled ? "On" : "Enable"}
+          </Button>
+        </div>
+      </div>
 
-        <div className="h-px bg-border" />
-
-        <label className="flex items-center justify-between gap-3">
-          <div>
-            <div className="text-sm font-medium">Paid plan</div>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Local toggle until billing exists. WhatsApp turns off when this is off.
-            </p>
-          </div>
+      <div className="flex flex-wrap items-center justify-between gap-3 border-t px-4 py-2.5">
+        <label className="flex items-center gap-2 text-sm">
           <input
             type="checkbox"
-            className="size-4 accent-primary"
+            className="size-3.5 accent-primary"
             checked={paid}
             onChange={(e) => tracker.setPlan(e.target.checked ? "paid" : "free")}
             aria-label="Paid plan"
           />
+          Paid plan
         </label>
+        <p className="text-xs text-muted-foreground">WhatsApp turns off when this is off.</p>
+      </div>
 
-        <div className={`grid gap-3 rounded-lg p-4 ring-1 ring-border ${paid ? "" : "opacity-70"}`}>
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <div className="text-sm font-medium">WhatsApp reminders</div>
-              {!paid ? (
-                <p className="mt-1 flex items-center gap-1.5 text-sm text-muted-foreground">
-                  <Lock className="size-3.5" />
-                  Paid plan — stops when the plan ends.
-                </p>
-              ) : (
-                <p className="mt-1 text-sm text-muted-foreground">
-                  Official Cloud API only. Template sends are billed by Meta. Turns off if you
-                  cancel.
-                </p>
-              )}
-            </div>
-            <input
-              type="checkbox"
-              className="mt-1 size-4 accent-primary"
-              checked={paid && tracker.whatsapp.enabled}
-              disabled={!paid}
-              onChange={(e) =>
-                tracker.setWhatsApp({
-                  enabled: e.target.checked,
-                  optedIn: e.target.checked ? true : tracker.whatsapp.optedIn,
-                })
-              }
-              aria-label="Enable WhatsApp reminders"
-            />
+      <div className={`border-t px-4 py-3 ${paid ? "" : "opacity-70"}`}>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="min-w-0">
+            <div className="text-sm font-medium">WhatsApp</div>
+            {!paid ? (
+              <p className="mt-0.5 flex items-center gap-1.5 text-xs text-muted-foreground">
+                <Lock className="size-3" />
+                Paid-only · stops when the plan ends
+              </p>
+            ) : (
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                Official Cloud API. Meta bills templates.
+              </p>
+            )}
           </div>
-          <label className="grid max-w-xs gap-1.5">
-            <span className="micro">Phone</span>
-            <Input
-              type="tel"
-              inputMode="tel"
-              placeholder="+91…"
-              disabled={!paid}
-              value={tracker.whatsapp.phone}
-              onChange={(e) => tracker.setWhatsApp({ phone: e.target.value })}
-            />
-          </label>
-          <p className="text-xs text-muted-foreground">
-            Free users get browser reminders. WhatsApp is paid-only and turns off when the plan
-            ends. There is no official free unlimited outbound blast.
-          </p>
-          <div className="flex flex-wrap items-center gap-3">
-            <Button type="button" variant="outline" size="sm" onClick={() => void pingWhatsApp()}>
-              Ping Cloud API stub
-            </Button>
-            {ping ? <span className="text-xs text-muted-foreground">{ping}</span> : null}
-          </div>
+          <input
+            type="checkbox"
+            className="size-3.5 accent-primary"
+            checked={paid && tracker.whatsapp.enabled}
+            disabled={!paid}
+            onChange={(e) =>
+              tracker.setWhatsApp({
+                enabled: e.target.checked,
+                optedIn: e.target.checked ? true : tracker.whatsapp.optedIn,
+              })
+            }
+            aria-label="Enable WhatsApp reminders"
+          />
         </div>
-      </CardContent>
-    </Card>
+        <div className="mt-2 flex flex-wrap items-center gap-2">
+          <Input
+            type="tel"
+            inputMode="tel"
+            placeholder="+91…"
+            disabled={!paid}
+            value={tracker.whatsapp.phone}
+            onChange={(e) => tracker.setWhatsApp({ phone: e.target.value })}
+            className="h-8 max-w-[12rem]"
+            aria-label="WhatsApp phone"
+          />
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="h-8"
+            disabled={!paid}
+            onClick={() => void pingWhatsApp()}
+          >
+            Ping stub
+          </Button>
+          {ping ? <span className="text-xs text-muted-foreground">{ping}</span> : null}
+        </div>
+      </div>
+    </div>
   );
 }
 

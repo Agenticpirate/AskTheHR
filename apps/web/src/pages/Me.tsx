@@ -119,7 +119,7 @@ export function Me() {
           <div className="w-full max-w-sm">
             <XpBar xp={tracker.xp} level={tracker.level} />
             <Button variant="ghost" size="sm" asChild className="mt-3 px-0">
-              <Link to="/streak">Open streak dashboard →</Link>
+              <Link to="/streak">Open Cadence →</Link>
             </Button>
           </div>
         </div>

@@ -37,7 +37,7 @@ export function Home() {
             <Link to="/me">{tracker.track ? "Open Me" : "Pick a track"}</Link>
           </Button>
           <Button variant="ghost" asChild>
-            <Link to="/streak">Streak</Link>
+            <Link to="/streak">Cadence</Link>
           </Button>
         </div>
       </HeroField>

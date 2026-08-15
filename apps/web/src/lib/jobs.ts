@@ -151,3 +151,40 @@ export function isCountry(v: string): v is Country {
 export function findJob(jobs: Job[], id: string): Job | undefined {
   return jobs.find((j) => j.id === id);
 }
+
+/** Job boards we may ingest from, but never send the seeker to apply. */
+const AGGREGATOR_MARKERS = [
+  "himalayas.app",
+  "remoteok.com",
+  "remotive.com",
+  "weworkremotely.com",
+  "jobicy.com",
+  "workingnomads",
+  "remotefirstjobs",
+  "arbeitnow",
+  "themuse.com",
+  "europa.eu",
+  "jobsyn.org",
+  "linkedin.com",
+  "indeed.com",
+  "glassdoor",
+  "naukri",
+  "instahyre",
+  "internshala",
+  "remotejobs.org",
+  "arbeitsagentur.de",
+  "mycareersfuture",
+  "jobsuche",
+];
+
+/** True when the apply URL is an employer ATS or company career site. */
+export function isEmployerApplyUrl(url: string): boolean {
+  if (!url) return false;
+  try {
+    const host = new URL(url).hostname.toLowerCase();
+    if (!host) return false;
+    return !AGGREGATOR_MARKERS.some((m) => host.includes(m));
+  } catch {
+    return false;
+  }
+}

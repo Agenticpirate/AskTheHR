@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatPosted } from "@/lib/dates";
-import { findJob, locationLabel, similarJobs } from "@/lib/jobs";
+import { findJob, isEmployerApplyUrl, locationLabel, similarJobs } from "@/lib/jobs";
 import { useJobs } from "@/lib/useJobs";
 import { useTracker } from "@/lib/useTracker";
 
@@ -88,11 +88,17 @@ export function JobDetail() {
               <CardTitle>Apply</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col gap-2">
-              <Button asChild>
-                <a href={job.url} target="_blank" rel="noreferrer">
-                  Apply on {job.source}
-                </a>
-              </Button>
+              {isEmployerApplyUrl(job.url) ? (
+                <Button asChild>
+                  <a href={job.url} target="_blank" rel="noreferrer">
+                    Apply at employer
+                  </a>
+                </Button>
+              ) : (
+                <p className="text-xs text-muted-foreground">
+                  No employer apply link for this listing.
+                </p>
+              )}
               <Button
                 type="button"
                 variant={applied ? "secondary" : "outline"}

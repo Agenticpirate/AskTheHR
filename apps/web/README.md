@@ -42,8 +42,9 @@ SPA fallback is public/_redirects: /* /index.html 200
 
 ## Job data
 
-- public/jobs.json — first 3000 remote-first rows plus totals (total vs shown / primary)
-- public/jobs-more.json — remaining rows, lazy-loaded by the board
+- public/jobs.json — up to 3000 India-eligible remote roles whose apply URL is the employer (ATS or company career site)
+- payload.total is the employer-URL eligible count, not a job-board scrape total
+- Aggregators (Himalayas, Jobsyn, EURES, …) are discovery sources only — Apply never goes there
 
 Refresh from the collector:
 
